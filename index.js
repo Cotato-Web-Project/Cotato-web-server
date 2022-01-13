@@ -17,10 +17,15 @@ app.use("/write", writeRouter)
 
 const mongoose = require("mongoose")
 const req = require("express/lib/request")
-// const { json } = require("body-parser")
+
+let db = mongoose.connection
+db.on("error", console.error)
+db.once("open", function () {
+  console.log("Connected to mongod server")
+})
 
 mongoose
-  .connect(config.mongoURI, {})
+  .connect(config.mongoURI, { useUnifiedTopology: true, useNewUrlParser: true })
   .then(() => console.log("MongoDB Connected..."))
   .catch((err) => console.log(err))
 
