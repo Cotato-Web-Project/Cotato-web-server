@@ -43,4 +43,12 @@ router.get("/:id", (req, res) => {
   })
 })
 
+//게시글 삭제 API(deletePost)
+router.delete("/:id", function (req, res) {
+  posts.deleteOne({ postid: parseInt(req.params.id) }, (err, post) => {
+    if (err) return res.json(err)
+    res.redirect("/board")
+  })
+})
+
 module.exports = router
