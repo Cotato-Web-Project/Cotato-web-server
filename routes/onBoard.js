@@ -36,18 +36,10 @@ router.post("/create", (req, res, next) => {
 })
 
 //선택된 게시글 정보 요청 API(toPost) -> control폴더 만들어서 따로 보관해야함.
-router.get("/:id", (req, res) => {
+router.get("/", (req, res) => {
   posts.findOne({ postid: parseInt(req.params.id) }, (err, post) => {
     if (err) return res.json(err)
     res.send(post)
-  })
-})
-
-//게시글 삭제 API(deletePost)
-router.delete("/:id", function (req, res) {
-  posts.deleteOne({ postid: parseInt(req.params.id) }, (err, post) => {
-    if (err) return res.json(err)
-    res.redirect("/board")
   })
 })
 

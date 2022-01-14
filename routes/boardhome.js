@@ -68,4 +68,12 @@ router.get("/searchpost", async (req, res) => {
   return post
 })
 
+//게시글 삭제 API(deletePost)
+router.delete("/:id", (req, res) => {
+  posts.deleteOne({ postid: parseInt(req.params.id) }, (err, post) => {
+    if (err) return res.json(err)
+    res.redirect("/board")
+  })
+})
+
 module.exports = router
