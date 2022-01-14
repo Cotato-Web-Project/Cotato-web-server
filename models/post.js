@@ -4,7 +4,8 @@ const Schema = mongoose.Schema
 const postSchema = new Schema({
   title: String,
   content: String,
-  date: { type: Date, default: Date.now },
+  postid: Number,
+  date: { type: Date, default: Date.nowm },
 })
 
 module.exports = mongoose.model("post", postSchema)
