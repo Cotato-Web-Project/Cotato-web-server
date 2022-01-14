@@ -7,11 +7,13 @@ const config = require("./config/key")
 const boardRouter = require("./routes/boardhome")
 const updateRouter = require("./routes/postupdate")
 const writeRouter = require("./routes/postwrite")
+const onboardRouter = require("./routes/onBoard")
 
 app.use(bodyParser.urlencoded({ extended: true }))
 app.use(bodyParser.json())
 
 app.use("/board", boardRouter)
+app.use("/board/:id", onboardRouter)
 app.use("/update", updateRouter)
 app.use("/write", writeRouter)
 
@@ -21,7 +23,7 @@ const req = require("express/lib/request")
 let db = mongoose.connection
 db.on("error", console.error)
 db.once("open", function () {
-  console.log("Connected to mongod server")
+  console.log("Connected to mongodb server")
 })
 
 mongoose
