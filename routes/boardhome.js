@@ -6,7 +6,7 @@ router.get("/", (req, res, next) => {
   res.send("게시판 홈페이지")
 })
 router.post("/", (req, res, next) => {
-  const { title, content } = req.body
+  const { title, content } = req.body.data.post
   console.log(req.body)
 
   const postModel = new posts()
