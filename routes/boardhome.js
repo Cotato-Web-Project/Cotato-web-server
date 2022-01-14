@@ -3,9 +3,12 @@ const res = require("express/lib/response")
 const router = express.Router()
 const posts = require("../models/post")
 
-//게시판 첫 페이지
-router.get("/", (req, res, next) => {
-  res.send("게시판 홈페이지")
+//게시글 모두 가져오기 API (getAllpost)
+router.get("/", function (req, res) {
+  posts.find({}, function (err, posts) {
+    if (err) return res.json(err)
+    res.send(posts)
+  })
 })
 
 //게시글 등록 API(createPost)
