@@ -19,6 +19,7 @@ app.use(bodyParser.json())
 
 const mongoose = require("mongoose")
 const req = require("express/lib/request")
+const post = require("./models/post")
 
 let db = mongoose.connection
 db.on("error", console.error)
@@ -98,6 +99,24 @@ app.get("/board/:id", (req, res) => {
     if (err) return res.json(err)
     res.send(post)
   })
+})
+
+//게시글 수정(updatePost)
+app.post("/board/:id", (req, res) => {
+  posts.updateOne(
+    { postid: parseInt(req.params.id) },
+    {
+      $set: {
+        title: req.body.title,
+        content: req.body.content,
+        date: req.body.date,
+      },
+    },
+    (err, post) => {
+      if (err) return res.json(err)
+      res.redirect("/board/" + req.params.id)
+    }
+  )
 })
 
 //게시글 삭제 API(deletePost)

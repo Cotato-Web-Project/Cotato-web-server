@@ -5,7 +5,7 @@ const postSchema = new Schema({
   title: String,
   content: String,
   postid: Number,
-  date: { type: Date, default: Date.now() },
+  date: { type: Date, default: Date.now },
 })
 
 //검색 인덱싱을 위해 추가
