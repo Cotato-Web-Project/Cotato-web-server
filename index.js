@@ -4,10 +4,17 @@ const port = 3000
 const bodyParser = require("body-parser")
 const config = require("./config/key")
 const posts = require("./models/post")
+const comment = require("./models/comment")
+const fs = require("fs")
+const path = require("path")
+const multer = require("multer")
+const imgModel = require("./models/image")
 // const boardRouter = require("./routes/boardhome")
 // const updateRouter = require("./routes/postupdate")
 // const writeRouter = require("./routes/postwrite")
 // const onboardRouter = require("./routes/onBoard")
+
+require("dotenv/config")
 
 app.use(bodyParser.urlencoded({ extended: true }))
 app.use(bodyParser.json())
@@ -27,11 +34,26 @@ db.once("open", function () {
 })
 
 mongoose
-  .connect(config.mongoURI, { useUnifiedTopology: true, useNewUrlParser: true })
+  .connect(config.mongoURI, {
+    useUnifiedTopology: true,
+    useNewUrlParser: true,
+  })
   .then(() => console.log("MongoDB Connected..."))
   .catch((err) => console.log(err))
 
 app.listen(port, () => console.log(`Example app listening on port ${port}!`))
+
+//img
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, "uploads")
+  },
+  filename: (req, file, cb) => {
+    cb(null, file.fieldname + "-" + Date.now())
+  },
+})
+
+const upload = multer({ storage: storage })
 
 //게시글 모두 가져오기 API (getAllpost)
 app.get("/board", function (req, res) {
@@ -42,7 +64,7 @@ app.get("/board", function (req, res) {
 })
 
 //게시글 등록 API(createPost)
-app.post("/board/create", (req, res, next) => {
+app.post("/board/createPost", (req, res, next) => {
   const { title, content, postid } = req.body.data.post
   console.log(req.body)
 
@@ -105,5 +127,57 @@ app.delete("/board/:id", (req, res) => {
   posts.deleteOne({ postid: parseInt(req.params.id) }, (err, post) => {
     if (err) return res.json(err)
     res.redirect("/board")
+  })
+})
+
+//댓글 등록 API(createcomment)
+app.post("/board/createComment", (req, res) => {})
+
+//게시글 수정(updatePost)
+app.post("/board/:id", (req, res) => {
+  posts.updateOne(
+    { postid: parseInt(req.params.id) },
+    {
+      $set: {
+        title: req.body.title,
+        content: req.body.content,
+        date: req.body.date,
+      },
+    },
+    (err, post) => {
+      if (err) return res.json(err)
+      res.redirect("/board/" + req.params.id)
+    }
+  )
+})
+
+//이미지
+app.get("/board/:id", (req, res) => {
+  imgModel.find({ postid: parseInt(req.params.id) }, (err, result) => {
+    if (err) {
+      console.log(err)
+      res.status(500).send("Error", err)
+    } else {
+      res.send(result)
+    }
+  })
+})
+
+app.post("/board/:id/img", upload.single("image"), (req, res, next) => {
+  const obj = {
+    img: {
+      data: fs.readFileSync(
+        path.join(__dirname + "/uploads/" + req.file.filename)
+      ),
+      contentType: "image/png",
+    },
+  }
+  imgModel.create(obj, (err, item) => {
+    if (err) {
+      console.log(err)
+    } else {
+      // item.save();
+      res.redirect("/board/:id")
+    }
   })
 })
