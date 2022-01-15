@@ -1,8 +1,8 @@
-const express = require("express")
-const router = express.Router()
+// const express = require("express")
+// const router = express.Router()
 
-router.get("/", (req, res, next) => {
-  res.send("글수정페이지")
-})
+// router.get("/", (req, res, next) => {
+//   res.send("글수정페이지")
+// })
 
-module.exports = router
+// module.exports = router
