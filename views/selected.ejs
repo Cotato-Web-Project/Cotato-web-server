@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>게시글</title>
+  </head>
+
+  <body>
+    <h1>게시글 목록</h1>
+    <hr />
+    <div>
+      <div style="display: inline-block">
+        <div>
+          <img
+            src="data:item/<%=item.img.contentType%>;base64,
+                     <%=item.img.data.toString('base64')%>"
+            width="200px"
+            height="200px"
+          />
+          <div>
+            <h5>제목 : <%= item.title %></h5>
+            <p>내용 : <%= item.desc %></p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

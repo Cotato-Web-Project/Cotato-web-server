@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>홈</title>
+  </head>
+
+  <body>
+    <h1>게시판 홈 페이지</h1>
+    <hr />
+
+    <h1>
+      게시글 목록(클릭시 들어갑니다)
+      <button onclick="location.href='/createPost'">글쓰기</button>
+    </h1>
+    <div>
+      <% items.forEach(function(data) { %>
+
+      <div style="display: inline-block">
+        <img
+          src="data:data/<%=data.img.contentType%>;base64,
+                       <%=data.img.data.toString('base64')%>"
+          width="200px"
+          height="200px"
+        />
+        <div>
+          <h5>제목 : <%= data.title %></h5>
+          <p>내용 : <%= data.desc %></p>
+          <button onclick="location.href='/updatePost'">수정</button>
+        </div>
+      </div>
+
+      <% }) %>
+    </div>
+  </body>
+</html>
