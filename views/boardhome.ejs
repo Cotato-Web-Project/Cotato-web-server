@@ -5,6 +5,18 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>홈</title>
   </head>
+  
+  <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+  <script
+    src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"
+    integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo"
+    crossorigin="anonymous"
+  ></script>
+  <script
+    src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"
+    integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6"
+    crossorigin="anonymous"
+  ></script>
 
   <body>
     <h1>게시판 홈 페이지</h1>
@@ -18,20 +30,37 @@
       <% items.forEach(function(data) { %>
 
       <div style="display: inline-block">
-        <img
-          src="data:data/<%=data.img.contentType%>;base64,
-                       <%=data.img.data.toString('base64')%>"
-          width="200px"
-          height="200px"
-        />
-        <div>
-          <h5>제목 : <%= data.title %></h5>
-          <p>내용 : <%= data.desc %></p>
-          <button onclick="location.href='/updatePost'">수정</button>
-        </div>
+        <p>
+          <img
+            src="data:data/<%=data.img.contentType%>;base64,
+                         <%=data.img.data.toString('base64')%>"
+            width="200px"
+            height="200px"
+          />
+          <div onclick="location.href='/<%=data.id%>'">
+            <h5>제목 : <%= data.title %></h5>
+            <p>내용 : <%= data.desc %></p>
+          </div>
+        </p>
+        <button onclick="location.href='/updatePost/<%=data.id%>'">수정</button>
+        <button class="delete" data-id="<%=data.id%>">삭제</button>
       </div>
-
       <% }) %>
     </div>
   </body>
+
+  <script>
+    $(".delete").click(function(e) {
+      $.ajax({
+        method: "DELETE",
+        url: "/deletePost",
+        data: { id: e.target.dataset.id },
+      })
+        .always((result) => {
+          console.log("삭제성공")
+          $(this).parent("div").fadeOut()
+        })
+        
+    })
+  </script>
 </html>

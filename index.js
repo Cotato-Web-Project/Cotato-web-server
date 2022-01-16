@@ -17,6 +17,7 @@ app.use(bodyParser.json())
 const mongoose = require("mongoose")
 
 let db = mongoose.connection
+
 db.on("error", console.error)
 db.once("open", function () {
   console.log("Connected to mongodb server")
@@ -47,7 +48,7 @@ const upload = multer({ storage: storage })
 //=================================| API |==================================//
 
 // 홈화면 API (getAllpost)
-app.get("/", function (req, res) {
+app.get("/", (req, res) => {
   posts.find({}, function (err, posts) {
     if (err) return res.json(err)
     res.render("boardhome.ejs", { items: posts })
@@ -55,17 +56,18 @@ app.get("/", function (req, res) {
 })
 
 //글쓰기 화면 API
-app.get("/createPost", function (req, res) {
+app.get("/createPost", (req, res) => {
   posts.find({}, function (err, posts) {
     if (err) return res.json(err)
     res.render("createPost.ejs", { items: posts })
   })
 })
 
-app.get("/updatePost", function (req, res) {
-  posts.find({}, function (err, posts) {
+//글수정 화면 API
+app.get("/updatePost/:id", function (req, res) {
+  posts.findOne({ _id: parseInt(req.params.id) }, (err, post) => {
     if (err) return res.json(err)
-    res.render("updatePost.ejs", { item: posts })
+    res.render("updatePost.ejs", { item: post })
   })
 })
 
@@ -124,17 +126,17 @@ app.get("/search", async (req, res) => {
 
 // 선택된 게시글 정보를 불러오는 요청 API(toPost)
 app.get("/:id", (req, res) => {
-  posts.findOne({ id: parseInt(req.params.id) }, (err, post) => {
+  posts.findOne({ _id: parseInt(req.params.id) }, (err, post) => {
     if (err) return res.json(err)
     res.render("selected.ejs", { item: post })
   })
 })
 
 //게시글 삭제 API(deletePost)
-app.delete("/:id", (req, res) => {
-  posts.deleteOne({ postid: parseInt(req.params.id) }, (err, post) => {
-    if (err) return res.json(err)
-    res.redirect("/board")
+app.delete("/deletePost", (req, res) => {
+  posts.deleteOne(req.body, (err, post) => {
+    if (err) return res.send(err)
+    res.redirect("/")
   })
 })
 
@@ -142,14 +144,21 @@ app.delete("/:id", (req, res) => {
 app.post("/board/createComment", (req, res) => {})
 
 //게시글 수정(updatePost)
-app.put("/updatePost", (req, res) => {
-  db.collection("posts").updateOne(
-    { id: parseInt(req.params.id) },
+app.post("/updatePost/:id", upload.single("image"), (req, res) => {
+  posts.updateOne(
+    { _id: parseInt(req.params.id) },
     {
       $set: {
         title: req.body.title,
         desc: req.body.desc,
         date: req.body.date,
+        img: {
+          data: fs.readFileSync(
+            path.join(__dirname + "/uploads/" + req.file.filename)
+          ),
+          contentType: "image/png",
+        },
+        _id: req.params.id,
       },
     },
     (err, post) => {

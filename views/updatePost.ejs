@@ -10,13 +10,17 @@
     <h1>게시글 작성 페이지</h1>
     <hr />
     <div>
-      <form action="/updatePost" method="POST" enctype="multipart/form-data">
+      <form
+        action="/updatePost/<%= item.id %>"
+        method="POST"
+        enctype="multipart/form-data"
+      >
         <div>
           <label for="title">제목</label>
           <input
             type="text"
             id="title"
-            placeholder="title"
+            placeholder="<%= item.title%>"
             value="<%= item.title%>"
             name="title"
             required
@@ -27,9 +31,9 @@
           <textarea
             id="desc"
             name="desc"
-            value="<%= item.desc%>"
-            rows="3"
-            placeholder="Description"
+            value="<%= item.desc %>"
+            rows="1"
+            placeholder="<%= item.desc %>"
             required
           >
           </textarea>
