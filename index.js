@@ -75,17 +75,26 @@ app.get("/updatePost/:id", function (req, res) {
 app.post("/createPost", upload.single("image"), (req, res, next) => {
   db.collection("counter").findOne({ name: "게시물갯수" }, (err, result) => {
     const id = result.totalPost
-    const obj = {
-      title: req.body.title,
-      desc: req.body.desc,
-      img: {
-        data: fs.readFileSync(
-          path.join(__dirname + "/uploads/" + req.file.filename)
-        ),
-        contentType: "image/png",
-      },
-      _id: id,
+    if (!req.file) {
+      var obj = {
+        title: req.body.title,
+        desc: req.body.desc,
+        _id: id,
+      }
+    } else {
+      var obj = {
+        title: req.body.title,
+        desc: req.body.desc,
+        img: {
+          data: fs.readFileSync(
+            path.join(__dirname + "/uploads/" + req.file.filename)
+          ),
+          contentType: "image/png",
+        },
+        _id: id,
+      }
     }
+
     posts.create(obj, (err, item) => {
       if (err) {
         console.log(err)
@@ -135,7 +144,8 @@ app.get("/:id", (req, res) => {
 
 //게시글 삭제 API(deletePost)
 app.delete("/deletePost", (req, res) => {
-  posts.deleteOne(req.body, (err, post) => {
+  posts.deleteOne({ _id: parseInt(req.body.id) }, (err, post) => {
+    console.log(req.body.id)
     if (err) return res.send(err)
     res.redirect("/")
   })

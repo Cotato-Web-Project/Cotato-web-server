@@ -51,12 +51,14 @@
       <% items.forEach(function(data) { %>
 
       <div style="display: inline-block">
+        <% if(data.img) { %>
         <img
           src="data:data/<%=data.img.contentType%>;base64,
                      <%=data.img.data.toString('base64')%>"
           width="200px"
           height="200px"
         />
+        <% }%>
         <div>
           <h5>제목 : <%= data.title %></h5>
           <p>내용 : <%= data.desc %></p>
