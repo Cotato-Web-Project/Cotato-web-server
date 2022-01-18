@@ -4,6 +4,7 @@ const Schema = mongoose.Schema
 const imageSchema = new mongoose.Schema({
   data: Buffer,
   contentType: String,
+  required: false,
 })
 
 const postSchema = new Schema({
