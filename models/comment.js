@@ -4,13 +4,10 @@ const commentSchema = mongoose.Schema(
   {
     post: {
       //populate
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Post",
-      required: true,
+      type: String,
     },
     parentComment: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Comment",
+      type: String,
     },
     text: {
       type: String,
@@ -28,7 +25,7 @@ const commentSchema = mongoose.Schema(
       type: Date,
       default: Date.now,
     },
-    upadtedAt: {
+    updatedAt: {
       type: Date,
     },
   },

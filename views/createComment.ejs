@@ -7,41 +7,21 @@
   </head>
 
   <body>
-    <!--게시글 들어간거-->
-    <h1 onclick="location.href='/'">게시글 목록</h1>
+    <h1> 댓글 작성 </h1>
     <hr />
     <div>
-      <div style="display: inline-block">
-        <div>
-          <% if(item.img) { %>
-          <img
-            src="data:item/<%=item.img.contentType%>;base64,
-                     <%=item.img.data.toString('base64')%>"
-            width="200px"
-            height="200px"
-          />
-          <% }%>
-          <div>
-            <h5>제목 : <%= item.title %></h5>
-            <p>내용 : <%= item.desc %></p>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!--댓글 작성-->
-
-    <form
-      action="/:id/createComment"
-      method="POST"
-      enctype="multipart/form-data"
-    >
+      <form action="/createComment/:id" method="POST">
       <div>
-        <label> 댓글 작성 </label>
-        <br />
-        <input type="text" name="commentText" value="" />
+        <label> 내용: </label>
+        <textarea
+        id="text"
+        name="text"
+        value=""
+        rows="3"
+        required
+        >
+        </textarea>
       </div>
-
       <div>
         <button type="submit">Submit</button>
       </div>

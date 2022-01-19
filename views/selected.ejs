@@ -28,11 +28,14 @@
       </div>
     </div>
 
-    <br />
-
+    <hr />
     <h1>
-      게시글 목록(클릭시 들어갑니다)
-      <button onclick="location.href='/:id/createPost'">댓글쓰기</button>
+      댓글
+      <button onclick="location.href='/createComment/:id'">댓글쓰기</button>
     </h1>
+    <div>
+      <h5>날짜 <%= items.createdAt %></h5>
+      <p>내용 : <%= items.text %></p>
+    </div>
   </body>
 </html>

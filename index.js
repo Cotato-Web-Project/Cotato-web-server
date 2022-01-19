@@ -134,16 +134,46 @@ app.get("/search", async (req, res) => {
   })
 })
 
+//댓글 작성 화면
+app.get("/createComment/:id", (req, res) => {
+  posts.findOne({ _id: parseInt(req.params.id) }, (err, comments) => {
+    if (err) return res.json(err)
+    res.render("createComment.ejs", { items: comments })
+  })
+})
+
+//댓글 등록 API(createcomment)
+app.post("/createComment/:id", (req, res) => {
+  const post = req.locals.post
+  req.body.post = post._id
+
+  comments.create(req.body, (err, comment) => {
+    if (err) {
+      return console.error(err)
+    }
+    return res.redirect("/:id")
+  })
+})
+
+//checkPostId
+function checkPostId(req, res, next) {
+  posts.findOne({ _id: req.query._id }, function (err, post) {
+    if (err) return res.json(err)
+
+    res.locals.post = post
+    next()
+  })
+}
+
 // 선택된 게시글 정보를 불러오는 요청 API(toPost)
 // 댓글 보여주기
 app.get("/:id", (req, res) => {
   Promise.all([
     posts.findOne({ _id: parseInt(req.params.id) }),
-    comments.find({ post: parseInt(req.params.id) }).sort("createdAt"),
+    comments.find({ post: parseInt(req.params.id) }),
   ])
     .then(([post, comments]) => {
       res.render("selected.ejs", { item: post, items: comments })
-      //res.redirect("/:id")
     })
     .catch((err) => {
       console.log("err: ", err)
@@ -159,30 +189,6 @@ app.delete("/deletePost", (req, res) => {
     res.redirect("/")
   })
 })
-
-//댓글 등록 API(createcomment)
-app.post("/:id/createComment", checkPostId, (req, res) => {
-  const post = req.locals.post
-
-  req.body.post = post._id
-
-  comments.create(req.body, (err, comment) => {
-    if (err) {
-      return console.error(err)
-    }
-    res.render("selected.ejs", { items: comments })
-  })
-})
-
-//checkPostId
-function checkPostId(req, res, next) {
-  posts.findOne({ _id: req.query._id }, function (err, post) {
-    if (err) return res.json(err)
-
-    res.locals.post = post
-    next()
-  })
-}
 
 //게시글 수정(updatePost)
 app.post("/updatePost/:id", upload.single("image"), (req, res) => {
