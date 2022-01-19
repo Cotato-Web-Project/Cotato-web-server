@@ -4,76 +4,122 @@ const port = 3000
 const bodyParser = require("body-parser")
 const config = require("./config/key")
 const posts = require("./models/post")
-// const boardRouter = require("./routes/boardhome")
-// const updateRouter = require("./routes/postupdate")
-// const writeRouter = require("./routes/postwrite")
-// const onboardRouter = require("./routes/onBoard")
+const fs = require("fs")
+const path = require("path")
+const multer = require("multer")
+
+require("dotenv/config")
+app.set("view engine", "ejs")
 
 app.use(bodyParser.urlencoded({ extended: true }))
 app.use(bodyParser.json())
 
-// app.use("/board", boardRouter)
-// app.use("/board/:id", onboardRouter)
-// app.use("/update", updateRouter)
-// app.use("/write", writeRouter)
-
 const mongoose = require("mongoose")
+<<<<<<< HEAD
 const req = require("express/lib/request")
 const post = require("./models/post")
+=======
+>>>>>>> c7036db55158df4da4b1aa4b62d3d3cad59b03b4
 
 let db = mongoose.connection
+
 db.on("error", console.error)
 db.once("open", function () {
   console.log("Connected to mongodb server")
 })
 
 mongoose
-  .connect(config.mongoURI, { useUnifiedTopology: true, useNewUrlParser: true })
+  .connect(config.mongoURI, {
+    useUnifiedTopology: true,
+    useNewUrlParser: true,
+  })
   .then(() => console.log("MongoDB Connected..."))
   .catch((err) => console.log(err))
 
 app.listen(port, () => console.log(`Example app listening on port ${port}!`))
 
-//게시글 모두 가져오기 API (getAllpost)
-app.get("/board", function (req, res) {
+//img
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, "uploads")
+  },
+  filename: (req, file, cb) => {
+    cb(null, file.originalname + Date.now() + ".jpg")
+  },
+})
+
+const upload = multer({ storage: storage })
+
+//=================================| API |==================================//
+
+// 홈화면 API (getAllpost)
+app.get("/", (req, res) => {
   posts.find({}, function (err, posts) {
     if (err) return res.json(err)
-    res.send(posts)
+    res.render("boardhome.ejs", { items: posts })
   })
 })
 
-//게시글 등록 API(createPost)
-app.post("/board/create", (req, res, next) => {
-  const { title, content, postid } = req.body.data.post
-  console.log(req.body)
+//글쓰기 화면 API
+app.get("/createPost", (req, res) => {
+  posts.find({}, function (err, posts) {
+    if (err) return res.json(err)
+    res.render("createPost.ejs", { items: posts })
+  })
+})
 
-  const postModel = new posts()
-  postModel.title = title
-  postModel.content = content
-  postModel.postid = postid
+//글수정 화면 API
+app.get("/updatePost/:id", function (req, res) {
+  posts.findOne({ _id: parseInt(req.params.id) }, (err, post) => {
+    if (err) return res.json(err)
+    res.render("updatePost.ejs", { item: post })
+  })
+})
 
-  postModel
-    .save()
-    .then((newPost) => {
-      console.log("Create 완료")
-      res.status(200).json({
-        message: "Create success",
-        data: {
-          post: newPost,
+//게시글 등록 ( 이미지 추가 )
+app.post("/createPost", upload.single("image"), (req, res, next) => {
+  db.collection("counter").findOne({ name: "게시물갯수" }, (err, result) => {
+    const id = result.totalPost
+    if (!req.file) {
+      var obj = {
+        title: req.body.title,
+        desc: req.body.desc,
+        _id: id,
+      }
+    } else {
+      var obj = {
+        title: req.body.title,
+        desc: req.body.desc,
+        img: {
+          data: fs.readFileSync(
+            path.join(__dirname + "/uploads/" + req.file.filename)
+          ),
+          contentType: "image/png",
         },
-      })
+        _id: id,
+      }
+    }
+
+    posts.create(obj, (err, item) => {
+      if (err) {
+        console.log(err)
+      } else {
+        item.save()
+        res.redirect("/")
+      }
     })
-    .catch((err) => {
-      res.status(500).json({
-        message: err,
-      })
-    })
+    db.collection("counter").updateOne(
+      { name: "게시물갯수" },
+      { $inc: { totalPost: 1 } }
+    )
+  })
 })
 
 //게시판 검색 기능
-app.get("/board/search", async (req, res) => {
+app.get("/search", async (req, res) => {
   let options = []
   if (req.query.option == "title") {
+    console.log(req.query)
     options = [{ title: new RegExp(req.query.content) }]
   } else if (req.query.option == "content") {
     options = [{ content: new RegExp(req.query.content) }]
@@ -89,15 +135,15 @@ app.get("/board/search", async (req, res) => {
   }
   console.log(options)
   posts.find({ $or: options }, (err, result) => {
-    res.json(result)
+    res.render("searched.ejs", { item: result })
   })
 })
 
 // 선택된 게시글 정보를 불러오는 요청 API(toPost)
-app.get("/board/:id", (req, res) => {
-  posts.findOne({ postid: parseInt(req.params.id) }, (err, post) => {
+app.get("/:id", (req, res) => {
+  posts.findOne({ _id: parseInt(req.params.id) }, (err, post) => {
     if (err) return res.json(err)
-    res.send(post)
+    res.render("selected.ejs", { item: post })
   })
 })
 
@@ -120,9 +166,38 @@ app.post("/board/:id", (req, res) => {
 })
 
 //게시글 삭제 API(deletePost)
-app.delete("/board/:id", (req, res) => {
-  posts.deleteOne({ postid: parseInt(req.params.id) }, (err, post) => {
-    if (err) return res.json(err)
-    res.redirect("/board")
+app.delete("/deletePost", (req, res) => {
+  posts.deleteOne({ _id: parseInt(req.body.id) }, (err, post) => {
+    console.log(req.body.id)
+    if (err) return res.send(err)
+    res.redirect("/")
   })
+})
+
+//댓글 등록 API(createcomment)
+app.post("/board/createComment", (req, res) => {})
+
+//게시글 수정(updatePost)
+app.post("/updatePost/:id", upload.single("image"), (req, res) => {
+  posts.updateOne(
+    { _id: parseInt(req.params.id) },
+    {
+      $set: {
+        title: req.body.title,
+        desc: req.body.desc,
+        date: req.body.date,
+        img: {
+          data: fs.readFileSync(
+            path.join(__dirname + "/uploads/" + req.file.filename)
+          ),
+          contentType: "image/png",
+        },
+        _id: req.params.id,
+      },
+    },
+    (err, post) => {
+      if (err) return res.json(err)
+      res.redirect("/" + req.params.id)
+    }
+  )
 })
