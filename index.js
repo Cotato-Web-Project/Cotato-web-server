@@ -4,6 +4,7 @@ const port = 3000
 const bodyParser = require("body-parser")
 const config = require("./config/key")
 const posts = require("./models/post")
+const comments = require("./models/comment")
 const fs = require("fs")
 const path = require("path")
 const multer = require("multer")
@@ -15,11 +16,6 @@ app.use(bodyParser.urlencoded({ extended: true }))
 app.use(bodyParser.json())
 
 const mongoose = require("mongoose")
-<<<<<<< HEAD
-const req = require("express/lib/request")
-const post = require("./models/post")
-=======
->>>>>>> c7036db55158df4da4b1aa4b62d3d3cad59b03b4
 
 let db = mongoose.connection
 
@@ -140,29 +136,20 @@ app.get("/search", async (req, res) => {
 })
 
 // 선택된 게시글 정보를 불러오는 요청 API(toPost)
+// 댓글 보여주기
 app.get("/:id", (req, res) => {
-  posts.findOne({ _id: parseInt(req.params.id) }, (err, post) => {
-    if (err) return res.json(err)
-    res.render("selected.ejs", { item: post })
-  })
-})
-
-//게시글 수정(updatePost)
-app.post("/board/:id", (req, res) => {
-  posts.updateOne(
-    { postid: parseInt(req.params.id) },
-    {
-      $set: {
-        title: req.body.title,
-        content: req.body.content,
-        date: req.body.date,
-      },
-    },
-    (err, post) => {
-      if (err) return res.json(err)
-      res.redirect("/board/" + req.params.id)
-    }
-  )
+  Promise.all([
+    posts.findOne({ _id: parseInt(req.params.id) }),
+    comments.find({ post: parseInt(req.params.id) }).sort("createdAt"),
+  ])
+    .then(([post, comments]) => {
+      res.render("selected.ejs", { item: post, items: comments })
+      //res.redirect("/:id")
+    })
+    .catch((err) => {
+      console.log("err: ", err)
+      return res.json(err)
+    })
 })
 
 //게시글 삭제 API(deletePost)
@@ -175,7 +162,28 @@ app.delete("/deletePost", (req, res) => {
 })
 
 //댓글 등록 API(createcomment)
-app.post("/board/createComment", (req, res) => {})
+app.post("/:id/createComment", checkPostId, (req, res) => {
+  const post = req.locals.post
+
+  req.body.post = post._id
+
+  comments.create(req.body, (err, comment) => {
+    if (err) {
+      return console.error(err)
+    }
+    res.render("selected.ejs", { items: comments })
+  })
+})
+
+//checkPostId
+function checkPostId(req, res, next) {
+  posts.findOne({ _id: req.query._id }, function (err, post) {
+    if (err) return res.json(err)
+
+    res.locals.post = post
+    next()
+  })
+}
 
 //게시글 수정(updatePost)
 app.post("/updatePost/:id", upload.single("image"), (req, res) => {

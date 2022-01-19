@@ -3,10 +3,11 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>게시글</title>
+    <title>댓글 작성 페이지</title>
   </head>
 
   <body>
+    <!--게시글 들어간거-->
     <h1 onclick="location.href='/'">게시글 목록</h1>
     <hr />
     <div>
@@ -28,11 +29,22 @@
       </div>
     </div>
 
-    <br />
+    <!--댓글 작성-->
 
-    <h1>
-      게시글 목록(클릭시 들어갑니다)
-      <button onclick="location.href='/:id/createPost'">댓글쓰기</button>
-    </h1>
+    <form
+      action="/:id/createComment"
+      method="POST"
+      enctype="multipart/form-data"
+    >
+      <div>
+        <label> 댓글 작성 </label>
+        <br />
+        <input type="text" name="commentText" value="" />
+      </div>
+
+      <div>
+        <button type="submit">Submit</button>
+      </div>
+    </form>
   </body>
 </html>
