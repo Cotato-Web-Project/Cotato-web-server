@@ -26,12 +26,14 @@
   
         <div style="display: inline-block">
           <p>
+            <% if(data.img) { %>
             <img
               src="data:data/<%=data.img.contentType%>;base64,
                            <%=data.img.data.toString('base64')%>"
               width="200px"
               height="200px"
             />
+            <% }%>
             <div onclick="location.href='/<%=data.id%>'">
               <h5>제목 : <%= data.title %></h5>
               <p>내용 : <%= data.desc %></p>
@@ -53,7 +55,7 @@
         </select>
         <input
           type="text"
-          id="search"
+          id="content"
           placeholder="검색"
           value=""
           name="content"

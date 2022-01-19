@@ -115,7 +115,6 @@ app.post("/createPost", upload.single("image"), (req, res, next) => {
 app.get("/search", async (req, res) => {
   let options = []
   if (req.query.option == "title") {
-    console.log(req.query)
     options = [{ title: new RegExp(req.query.content) }]
   } else if (req.query.option == "content") {
     options = [{ content: new RegExp(req.query.content) }]
