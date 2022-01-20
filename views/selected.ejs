@@ -28,35 +28,5 @@
       </div>
     </div>
     <hr />
-    <h1>
-      댓글
-      <hr />
-    </h1>
-    <% if(comment) { %>
-    <% comment.forEach(function(data) { %>
-    <div>
-      <h5>날짜 <%= data.createdAt %></h5>
-      <p>내용 : <%= data %></p>
-    </div>
-    <% })%>
-    <% }%>
-    <h1> 댓글 작성 </h1>
-    <hr />
-    <div>
-      <form action="/createComment/<%=item.id %>" method="POST">
-      <div>
-        <label> 내용: </label>
-        <textarea
-        id="text"
-        name="comment"
-        value=""
-        rows="2"
-        >
-        </textarea>
-      </div>
-      <div>
-        <button type="submit">Submit</button>
-      </div>
-    </form>
   </body>
 </html>
