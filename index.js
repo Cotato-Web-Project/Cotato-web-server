@@ -4,7 +4,7 @@ const port = 3000
 const bodyParser = require("body-parser")
 const config = require("./config/key")
 const posts = require("./models/post")
-// const comment = require("./models/comment")
+const comment = require("./models/comment")
 const fs = require("fs")
 const path = require("path")
 const multer = require("multer")
@@ -136,49 +136,12 @@ app.get("/search", async (req, res) => {
 
 // 선택된 게시글 정보를 불러오는 요청 API(toPost)
 app.get("/:id", (req, res) => {
-  posts.findOne({ id: parseInt(req.params.id) }, (err, post) => {
-    if (err) return res.json(err)
-    res.render("createComment.ejs", { items: comments })
-  })
-})
-
-//댓글 등록 API(createcomment)
-app.post("/createComment/:id", (req, res) => {
-  const post = req.locals.post
-  req.body.post = post._id
-
-  comments.create(req.body, (err, comment) => {
-    if (err) {
-      return console.error(err)
-    }
-    return res.redirect("/:id")
-  })
-})
-
-//checkPostId
-function checkPostId(req, res, next) {
-  posts.findOne({ _id: req.query._id }, function (err, post) {
-    if (err) return res.json(err)
-
-    res.locals.post = post
-    next()
-  })
-}
-
-// 선택된 게시글 정보를 불러오는 요청 API(toPost)
-// 댓글 보여주기
-app.get("/:id", (req, res) => {
   Promise.all([
-    posts.findOne({ _id: parseInt(req.params.id) }),
-    comments.find({ post: parseInt(req.params.id) }),
-  ])
-    .then(([post, comments]) => {
-      res.render("selected.ejs", { item: post, items: comments })
-    })
-    .catch((err) => {
-      console.log("err: ", err)
-      return res.json(err)
-    })
+    posts.findOne({ id: parseInt(req.params.id) }),
+    comment.find({ post: req.body._id }).sort("createdAt"),
+  ]).then(([post, comment]) => {
+    res.render("selected.ejs", { item: post, comment: comment })
+  })
 })
 
 //게시글 삭제 API(deletePost)
@@ -230,4 +193,19 @@ app.post("/updatePost/:id", upload.single("image"), (req, res) => {
       }
     )
   }
+})
+
+//댓글 등록
+app.post("/createComment/:id", (req, res) => {
+  // 1
+  obj = {
+    post: req.body._id,
+    idDeleted: false,
+    text: req.body.comment,
+  }
+  comment.create(obj, function (err, comment) {
+    if (err) {
+      return console.error(err)
+    }
+  })
 })
