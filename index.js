@@ -4,7 +4,7 @@ const port = 3000
 const bodyParser = require("body-parser")
 const config = require("./config/key")
 const posts = require("./models/post")
-// const comment = require("./models/comment")
+const comment = require("./models/comment")
 const fs = require("fs")
 const path = require("path")
 const multer = require("multer")
@@ -136,9 +136,11 @@ app.get("/search", async (req, res) => {
 
 // 선택된 게시글 정보를 불러오는 요청 API(toPost)
 app.get("/:id", (req, res) => {
-  posts.findOne({ id: parseInt(req.params.id) }, (err, post) => {
-    if (err) return res.json(err)
-    res.render("selected.ejs", { item: post })
+  Promise.all([
+    posts.findOne({ id: parseInt(req.params.id) }),
+    comment.find({ post: req.body._id }).sort("createdAt"),
+  ]).then(([post, comment]) => {
+    res.render("selected.ejs", { item: post, comment: comment })
   })
 })
 
@@ -191,4 +193,19 @@ app.post("/updatePost/:id", upload.single("image"), (req, res) => {
       }
     )
   }
+})
+
+//댓글 등록
+app.post("/createComment/:id", (req, res) => {
+  // 1
+  obj = {
+    post: req.body._id,
+    idDeleted: false,
+    text: req.body.comment,
+  }
+  comment.create(obj, function (err, comment) {
+    if (err) {
+      return console.error(err)
+    }
+  })
 })
