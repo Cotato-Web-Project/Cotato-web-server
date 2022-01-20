@@ -10,7 +10,6 @@ const imageSchema = new mongoose.Schema({
 const postSchema = new Schema({
   title: String,
   desc: String,
-  postid: Number,
   date: { type: Date, default: Date.now() },
   img: imageSchema,
   _id: Number,

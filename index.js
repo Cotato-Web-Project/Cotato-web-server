@@ -134,9 +134,15 @@ app.get("/search", async (req, res) => {
   })
 })
 
+<<<<<<< HEAD
 //댓글 작성 화면
 app.get("/createComment/:id", (req, res) => {
   posts.findOne({ _id: parseInt(req.params.id) }, (err, comments) => {
+=======
+// 선택된 게시글 정보를 불러오는 요청 API(toPost)
+app.get("/:id", (req, res) => {
+  posts.findOne({ id: parseInt(req.params.id) }, (err, post) => {
+>>>>>>> de81b9b7f9662af164e1ab1f927166e1fd6eeed0
     if (err) return res.json(err)
     res.render("createComment.ejs", { items: comments })
   })
