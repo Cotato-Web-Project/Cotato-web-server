@@ -12,7 +12,7 @@ const postSchema = new Schema({
   desc: String,
   date: { type: Date, default: Date.now() },
   img: imageSchema,
-  _id: Number,
+  id: Number,
 })
 
 //검색 인덱싱을 위해 추가

@@ -4,6 +4,7 @@ const port = 3000
 const bodyParser = require("body-parser")
 const config = require("./config/key")
 const posts = require("./models/post")
+// const comment = require("./models/comment")
 const fs = require("fs")
 const path = require("path")
 const multer = require("multer")
@@ -65,7 +66,7 @@ app.get("/createPost", (req, res) => {
 
 //글수정 화면 API
 app.get("/updatePost/:id", function (req, res) {
-  posts.findOne({ _id: parseInt(req.params.id) }, (err, post) => {
+  posts.findOne({ id: parseInt(req.params.id) }, (err, post) => {
     if (err) return res.json(err)
     res.render("updatePost.ejs", { item: post })
   })
@@ -79,7 +80,7 @@ app.post("/createPost", upload.single("image"), (req, res, next) => {
       var obj = {
         title: req.body.title,
         desc: req.body.desc,
-        _id: id,
+        id: id,
       }
     } else {
       var obj = {
@@ -91,7 +92,7 @@ app.post("/createPost", upload.single("image"), (req, res, next) => {
           ),
           contentType: "image/png",
         },
-        _id: id,
+        id: id,
       }
     }
 
@@ -143,7 +144,7 @@ app.get("/:id", (req, res) => {
 
 //게시글 삭제 API(deletePost)
 app.delete("/deletePost", (req, res) => {
-  posts.deleteOne({ _id: parseInt(req.body.id) }, (err, post) => {
+  posts.deleteOne({ id: parseInt(req.body.id) }, (err, post) => {
     console.log(req.body.id)
     if (err) return res.send(err)
     res.redirect("/")
@@ -152,25 +153,42 @@ app.delete("/deletePost", (req, res) => {
 
 //게시글 수정(updatePost)
 app.post("/updatePost/:id", upload.single("image"), (req, res) => {
-  posts.updateOne(
-    { _id: parseInt(req.params.id) },
-    {
-      $set: {
-        title: req.body.title,
-        desc: req.body.desc,
-        date: req.body.date,
-        img: {
-          data: fs.readFileSync(
-            path.join(__dirname + "/uploads/" + req.file.filename)
-          ),
-          contentType: "image/png",
+  if (req.file) {
+    posts.updateOne(
+      { id: parseInt(req.params.id) },
+      {
+        $set: {
+          title: req.body.title,
+          desc: req.body.desc,
+          date: req.body.date,
+          img: {
+            data: fs.readFileSync(
+              path.join(__dirname + "/uploads/" + req.file.filename)
+            ),
+            contentType: "image/png",
+          },
+          id: parseInt(req.params.id),
         },
-        _id: req.params.id,
       },
-    },
-    (err, post) => {
-      if (err) return res.json(err)
-      res.redirect("/" + req.params.id)
-    }
-  )
+      (err, post) => {
+        if (err) return res.json(err)
+        res.redirect("/" + req.params.id)
+      }
+    )
+  } else {
+    posts.updateOne(
+      { id: parseInt(req.params.id) },
+      {
+        $set: {
+          title: req.body.title,
+          desc: req.body.desc,
+          date: req.body.date,
+        },
+      },
+      (err, post) => {
+        if (err) return res.json(err)
+        res.redirect("/" + req.params.id)
+      }
+    )
+  }
 })
