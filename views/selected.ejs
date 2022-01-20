@@ -27,24 +27,9 @@
         </div>
       </div>
     </div>
-<<<<<<< HEAD
-
     <hr />
-<<<<<<< HEAD
-    <h1>
-      댓글
-      <button onclick="location.href='/createComment/:id'">댓글쓰기</button>
-    </h1>
-    <div>
-      <h5>날짜 <%= items.createdAt %></h5>
-      <p>내용 : <%= items.text %></p>
-    </div>
-=======
-    <hr />
->>>>>>> de81b9b7f9662af164e1ab1f927166e1fd6eeed0
-=======
     <h1>댓글작성</h1>
-    <form action="/createComment/<%=item.id %>" method="POST">
+    <form action="/board/<%=item.id %>/createComment" method="POST">
       <div>
         <label> 내용: </label>
         <textarea id="text" name="comment" value="" rows="2"> </textarea>
@@ -58,6 +43,5 @@
     <% if(comment){ %> <% comment.forEach(function(data) { %>
     <li><%= data.text %> <%= data.createdAt %></li>
     <% }) %> <% } %>
->>>>>>> f61f4f93a55c0ef05c5f61cc6db0aac7117b4c78
   </body>
 </html>

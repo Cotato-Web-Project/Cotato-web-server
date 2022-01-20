@@ -7,15 +7,17 @@ const imageSchema = new mongoose.Schema({
   required: false,
 })
 
-const postSchema = new Schema({
+const postSchema = new mongoose.Schema({
   title: String,
   desc: String,
   date: { type: Date, default: Date.now() },
   img: imageSchema,
-  id: Number,
+  //id: mongoose.Schema.Types.ObjectId,
 })
 
 //검색 인덱싱을 위해 추가
 postSchema.index({ title: "text", content: "text" })
 
-module.exports = mongoose.model("post", postSchema)
+const Post = mongoose.model("Post", postSchema)
+
+module.exports = Post

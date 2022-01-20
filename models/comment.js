@@ -5,21 +5,18 @@ const commentSchema = mongoose.Schema(
     // 댓글 쓰는 게시물 아이디
     post: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "Post",
+      ref: "posts",
     },
     // 대댓글 구현시 부모 댓글이 무엇인지
     parentComment: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "Comment",
+      ref: "comments",
     },
     isDeleted: {
       type: Boolean,
       default: false,
     },
-    text: {
-      type: String,
-      required: true,
-    },
+    text: String,
     depth: {
       type: Number,
       default: 1,

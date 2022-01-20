@@ -135,10 +135,10 @@ app.get("/search", async (req, res) => {
 })
 
 // 선택된 게시글 정보를 불러오는 요청 API(toPost)
-app.get("/:id", (req, res) => {
+app.get("/board/:id", (req, res, next) => {
   Promise.all([
-    posts.findOne({ id: parseInt(req.params.id) }),
-    comment.find({ post: req.body._id }).sort("createdAt"),
+    posts.findById(req.params.id),
+    comment.find({ post: req.params.id }).sort("createdAt"),
   ]).then(([post, comment]) => {
     res.render("selected.ejs", { item: post, comment: comment })
   })
@@ -146,18 +146,18 @@ app.get("/:id", (req, res) => {
 
 //게시글 삭제 API(deletePost)
 app.delete("/deletePost", (req, res) => {
-  posts.deleteOne({ id: parseInt(req.body.id) }, (err, post) => {
+  posts.findByIdAndDelete(req.body.id, (err, post) => {
     console.log(req.body.id)
     if (err) return res.send(err)
     res.redirect("/")
   })
 })
 
-//게시글 수정(updatePost)
+//게시글 수정(updatePost) 안됨!바꿔야함!
 app.post("/updatePost/:id", upload.single("image"), (req, res) => {
   if (req.file) {
-    posts.updateOne(
-      { id: parseInt(req.params.id) },
+    posts.findByIdAndUpdate(
+      req.params.id,
       {
         $set: {
           title: req.body.title,
@@ -169,17 +169,17 @@ app.post("/updatePost/:id", upload.single("image"), (req, res) => {
             ),
             contentType: "image/png",
           },
-          id: parseInt(req.params.id),
+          id: req.params.id,
         },
       },
       (err, post) => {
         if (err) return res.json(err)
-        res.redirect("/" + req.params.id)
+        res.redirect("/board/" + req.params.id)
       }
     )
   } else {
-    posts.updateOne(
-      { id: parseInt(req.params.id) },
+    posts.findByIdAndUpdate(
+      req.params.id,
       {
         $set: {
           title: req.body.title,
@@ -189,23 +189,26 @@ app.post("/updatePost/:id", upload.single("image"), (req, res) => {
       },
       (err, post) => {
         if (err) return res.json(err)
-        res.redirect("/" + req.params.id)
+        res.redirect("/board/" + req.params.id)
       }
     )
   }
 })
 
 //댓글 등록
-app.post("/createComment/:id", (req, res) => {
+app.post("/board/:id/createComment", (req, res) => {
   // 1
-  obj = {
-    post: req.body._id,
+  const comment_obj = new comment({
+    post: req.params.id,
     idDeleted: false,
     text: req.body.comment,
-  }
-  comment.create(obj, function (err, comment) {
+  })
+
+  comment.create(comment_obj, function (err, comment) {
     if (err) {
-      return console.error(err)
+      console.error(err)
+    } else {
+      res.redirect("/board/" + req.params.id)
     }
   })
 })
