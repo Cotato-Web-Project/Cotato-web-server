@@ -4,7 +4,7 @@ const commentSchema = mongoose.Schema(
   {
     post: {
       //populate
-      type: mongoose.Schema.Types.ObjectId,
+      type: Number,
       ref: "Post",
       required: true,
     },

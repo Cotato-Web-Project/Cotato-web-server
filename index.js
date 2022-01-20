@@ -7,6 +7,7 @@ const posts = require("./models/post")
 const fs = require("fs")
 const path = require("path")
 const multer = require("multer")
+const comments = require("./models/comment")
 
 require("dotenv/config")
 app.set("view engine", "ejs")
@@ -135,9 +136,11 @@ app.get("/search", async (req, res) => {
 
 // 선택된 게시글 정보를 불러오는 요청 API(toPost)
 app.get("/:id", (req, res) => {
-  posts.findOne({ _id: parseInt(req.params.id) }, (err, post) => {
-    if (err) return res.json(err)
-    res.render("selected.ejs", { item: post })
+  Promise.all([
+    posts.findOne({ _id: parseInt(req.params.id) }),
+    comments.find({ post: req.params.id }).sort("createdAt"),
+  ]).then(([post, comments]) => {
+    res.render("selected.ejs", { item: post, comment: comments })
   })
 })
 
@@ -150,8 +153,24 @@ app.delete("/deletePost", (req, res) => {
   })
 })
 
+//댓글 작성 화면
+app.get("/createComment/:id", (req, res) => {
+  posts.findOne({ _id: parseInt(req.params.id) }, (err, comment) => {
+    if (err) return res.json(err)
+    res.render("createComment.ejs", { item: comment })
+  })
+})
+
 //댓글 등록 API(createcomment)
-app.post("/board/createComment", (req, res) => {})
+app.post("/createComment/:id", (req, res) => {
+  console.log(req)
+  comments.create(req.body, (err, comment) => {
+    if (err) {
+      return console.error(err)
+    }
+    return res.redirect("/:id")
+  })
+})
 
 //게시글 수정(updatePost)
 app.post("/updatePost/:id", upload.single("image"), (req, res) => {
