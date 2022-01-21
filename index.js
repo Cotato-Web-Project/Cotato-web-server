@@ -80,15 +80,12 @@ app.post("/createPost", upload.single("image"), (req, res, next) => {
       var obj = {
         title: req.body.title,
         desc: req.body.desc,
-<<<<<<< HEAD
-<<<<<<< Updated upstream
+
         _id: id,
-=======
+
         id: req.body.id,
->>>>>>> Stashed changes
-=======
+
         id: id,
->>>>>>> f61f4f93a55c0ef05c5f61cc6db0aac7117b4c78
       }
     } else {
       var obj = {
@@ -100,15 +97,6 @@ app.post("/createPost", upload.single("image"), (req, res, next) => {
           ),
           contentType: "image/png",
         },
-<<<<<<< HEAD
-<<<<<<< Updated upstream
-        _id: id,
-=======
-        id: req.body.id,
->>>>>>> Stashed changes
-=======
-        id: id,
->>>>>>> f61f4f93a55c0ef05c5f61cc6db0aac7117b4c78
       }
     }
 
@@ -225,9 +213,7 @@ app.post("/createComment/:id", (req, res) => {
     }
   })
 })
-<<<<<<< HEAD
 
-<<<<<<< Updated upstream
 //게시글 수정(updatePost)
 app.post("/updatePost/:id", upload.single("image"), (req, res) => {
   posts.updateOne(
@@ -252,7 +238,7 @@ app.post("/updatePost/:id", upload.single("image"), (req, res) => {
     }
   )
 })
-=======
+
 app.get("/board/:id/deleteComment", (req, res) => {
   comment.findByIdAndUpdate(
     req.params.id,
@@ -308,6 +294,3 @@ app.post("/board/:id/replyComment", (req, res) => {
     })
   })
 })
->>>>>>> Stashed changes
-=======
->>>>>>> f61f4f93a55c0ef05c5f61cc6db0aac7117b4c78
