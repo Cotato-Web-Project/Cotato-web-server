@@ -29,7 +29,7 @@
     </div>
     <hr />
     <h1>댓글작성</h1>
-    <form action="/createComment/<%=item.id %>" method="POST">
+    <form action="/board/<%=item.id %>/createComment" method="POST">
       <div>
         <label> 내용: </label>
         <textarea id="text" name="comment" value="" rows="2"> </textarea>

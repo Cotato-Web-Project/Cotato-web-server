@@ -46,7 +46,7 @@ const storage = multer.diskStorage({
 
 const upload = multer({ storage: storage })
 
-//=================================| API |=================================//
+//=================================| API |==================================//
 
 // 홈화면 API (getAllpost)
 app.get("/", (req, res) => {
@@ -75,17 +75,11 @@ app.get("/updatePost/:id", function (req, res) {
 //게시글 등록 ( 이미지 추가 )
 app.post("/createPost", upload.single("image"), (req, res, next) => {
   db.collection("counter").findOne({ name: "게시물갯수" }, (err, result) => {
-    const id = result.totalPost
     if (!req.file) {
       var obj = {
         title: req.body.title,
         desc: req.body.desc,
-
-        _id: id,
-
-        id: req.body.id,
-
-        id: id,
+        id: req.body._id,
       }
     } else {
       var obj = {
@@ -97,6 +91,7 @@ app.post("/createPost", upload.single("image"), (req, res, next) => {
           ),
           contentType: "image/png",
         },
+        id: req.body._id,
       }
     }
 
@@ -121,11 +116,11 @@ app.get("/search", async (req, res) => {
   if (req.query.option == "title") {
     options = [{ title: new RegExp(req.query.content) }]
   } else if (req.query.option == "content") {
-    options = [{ content: new RegExp(req.query.content) }]
+    options = [{ desc: new RegExp(req.query.content) }]
   } else if (req.query.option == "title+content") {
     options = [
       { title: new RegExp(req.query.content) },
-      { content: new RegExp(req.query.content) },
+      { desc: new RegExp(req.query.content) },
     ]
   } else {
     const err = new Error("검색 옵션이 없습니다.")
@@ -202,41 +197,19 @@ app.post("/updatePost/:id", upload.single("image"), (req, res) => {
 //댓글 등록
 app.post("/board/:id/createComment", (req, res) => {
   // 1
-  obj = {
-    post: req.body._id,
+  const comment_obj = new comment({
+    post: req.params.id,
     idDeleted: false,
     text: req.body.comment,
-  }
-  comment.create(obj, function (err, comment) {
+  })
+
+  comment.create(comment_obj, function (err, comment) {
     if (err) {
-      return console.error(err)
+      console.error(err)
+    } else {
+      res.redirect("/board/" + req.params.id)
     }
   })
-})
-
-//게시글 수정(updatePost)
-app.post("/updatePost/:id", upload.single("image"), (req, res) => {
-  posts.updateOne(
-    { _id: parseInt(req.params.id) },
-    {
-      $set: {
-        title: req.body.title,
-        desc: req.body.desc,
-        date: req.body.date,
-        img: {
-          data: fs.readFileSync(
-            path.join(__dirname + "/uploads/" + req.file.filename)
-          ),
-          contentType: "image/png",
-        },
-        _id: req.params.id,
-      },
-    },
-    (err, post) => {
-      if (err) return res.json(err)
-      res.redirect("/" + req.params.id)
-    }
-  )
 })
 
 app.get("/board/:id/deleteComment", (req, res) => {
