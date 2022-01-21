@@ -41,7 +41,26 @@
 
     <h1>댓글</h1>
     <% if(comment){ %> <% comment.forEach(function(data) { %>
-    <li><%= data.text %> <%= data.createdAt %></li>
+    <p>
+      <% if(data.isDeleted == false) {%> <%= data.text %> <%= data.createdAt %>
+      <button onclick="location.href='/board/<%= data.id %>/deleteComment'">
+        삭제
+      </button>
+
+      <h4>대댓글</h4>
+      <form action = "/board/<%=data.id%>/replyComment" method = "POST">
+        <div>
+          <label>내용 :</label>
+          <textarea name="comment" id="text" rows="3"></textarea>
+        </div>
+        <div>
+          <button type="submit">SUbmit</button>
+        </div>
+      </form>
+
+      <% } %>
+    </p>
+
     <% }) %> <% } %>
   </body>
 </html>

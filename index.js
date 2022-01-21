@@ -16,6 +16,7 @@ app.use(bodyParser.urlencoded({ extended: true }))
 app.use(bodyParser.json())
 
 const mongoose = require("mongoose")
+const { ifError } = require("assert")
 
 let db = mongoose.connection
 
@@ -113,15 +114,16 @@ app.post("/createPost", upload.single("image"), (req, res, next) => {
 
 //게시판 검색 기능
 app.get("/search", async (req, res) => {
+  //
   let options = []
   if (req.query.option == "title") {
     options = [{ title: new RegExp(req.query.content) }]
   } else if (req.query.option == "content") {
-    options = [{ content: new RegExp(req.query.content) }]
+    options = [{ desc: new RegExp(req.query.content) }]
   } else if (req.query.option == "title+content") {
     options = [
       { title: new RegExp(req.query.content) },
-      { content: new RegExp(req.query.content) },
+      { desc: new RegExp(req.query.content) },
     ]
   } else {
     const err = new Error("검색 옵션이 없습니다.")
@@ -135,12 +137,15 @@ app.get("/search", async (req, res) => {
 })
 
 // 선택된 게시글 정보를 불러오는 요청 API(toPost)
-app.get("/board/:id", (req, res, next) => {
+app.get("/board/:id", (req, res) => {
   Promise.all([
     posts.findById(req.params.id),
     comment.find({ post: req.params.id }).sort("createdAt"),
   ]).then(([post, comment]) => {
-    res.render("selected.ejs", { item: post, comment: comment })
+    res.render("selected.ejs", {
+      item: post,
+      comment: comment,
+    })
   })
 })
 
@@ -197,10 +202,9 @@ app.post("/updatePost/:id", upload.single("image"), (req, res) => {
 
 //댓글 등록
 app.post("/board/:id/createComment", (req, res) => {
-  // 1
   const comment_obj = new comment({
     post: req.params.id,
-    idDeleted: false,
+    isDeleted: false,
     text: req.body.comment,
   })
 
@@ -210,5 +214,67 @@ app.post("/board/:id/createComment", (req, res) => {
     } else {
       res.redirect("/board/" + req.params.id)
     }
+  })
+
+  comment_obj.parentComment = comment_obj.id
+})
+
+// 댓글 삭제
+app.get("/board/:id/deleteComment", (req, res) => {
+  comment.findByIdAndUpdate(
+    req.params.id,
+    {
+      $set: {
+        isDeleted: true,
+      },
+    },
+    (err, result) => {
+      if (err) return res.send(err)
+      res.redirect("/board/" + result.post)
+    }
+  )
+})
+
+//이것도 댓글 수정
+app.get("/board/:id/updatePage", (req, res) => {
+  comment.findById(req.params.id, (err, result) => {
+    if (err) return res.send(err)
+    res.render("updateComment", { item: result })
+  })
+})
+
+//댓글 수정
+app.post("/board/:id/updateComment", (req, res) => {
+  comment.findByIdAndUpdate(
+    req.params.id,
+    {
+      $set: {
+        text: req.body.comment,
+      },
+    },
+    (err, result) => {
+      if (err) return res.send(err)
+      res.redirect("/board/" + result.post)
+    }
+  )
+})
+
+//대댓글 등록하기
+app.post("/board/:id/replyComment", (req, res) => {
+  comment.findOne({ _id: req.params.id }, (err, result) => {
+    const comment_obj = new comment({
+      post: result.post,
+      parentComment: req.params.id,
+      isDeleted: false,
+      text: req.body.comment,
+    })
+
+    comment.create(comment_obj, function (err, comment) {
+      if (err) {
+        console.error(err)
+      } else {
+        res.redirect("/board/" + result.post)
+      }
+    })
   })
 })
