@@ -66,7 +66,7 @@ app.get("/createPost", (req, res) => {
 
 //글수정 화면 API
 app.get("/updatePost/:id", function (req, res) {
-  posts.findOne({ id: parseInt(req.params.id) }, (err, post) => {
+  posts.findById(req.params.id, (err, post) => {
     if (err) return res.json(err)
     res.render("updatePost.ejs", { item: post })
   })
@@ -153,7 +153,7 @@ app.delete("/deletePost", (req, res) => {
   })
 })
 
-//게시글 수정(updatePost) 안됨!바꿔야함!
+//게시글 수정(updatePost)
 app.post("/updatePost/:id", upload.single("image"), (req, res) => {
   if (req.file) {
     posts.findByIdAndUpdate(
