@@ -80,6 +80,11 @@ app.post("/createPost", upload.single("image"), (req, res, next) => {
       var obj = {
         title: req.body.title,
         desc: req.body.desc,
+
+        _id: id,
+
+        id: req.body.id,
+
         id: id,
       }
     } else {
@@ -92,7 +97,6 @@ app.post("/createPost", upload.single("image"), (req, res, next) => {
           ),
           contentType: "image/png",
         },
-        id: id,
       }
     }
 
@@ -198,17 +202,95 @@ app.post("/updatePost/:id", upload.single("image"), (req, res) => {
 //댓글 등록
 app.post("/board/:id/createComment", (req, res) => {
   // 1
-  const comment_obj = new comment({
-    post: req.params.id,
+  obj = {
+    post: req.body._id,
     idDeleted: false,
     text: req.body.comment,
-  })
-
-  comment.create(comment_obj, function (err, comment) {
+  }
+  comment.create(obj, function (err, comment) {
     if (err) {
-      console.error(err)
-    } else {
-      res.redirect("/board/" + req.params.id)
+      return console.error(err)
     }
+  })
+})
+
+//게시글 수정(updatePost)
+app.post("/updatePost/:id", upload.single("image"), (req, res) => {
+  posts.updateOne(
+    { _id: parseInt(req.params.id) },
+    {
+      $set: {
+        title: req.body.title,
+        desc: req.body.desc,
+        date: req.body.date,
+        img: {
+          data: fs.readFileSync(
+            path.join(__dirname + "/uploads/" + req.file.filename)
+          ),
+          contentType: "image/png",
+        },
+        _id: req.params.id,
+      },
+    },
+    (err, post) => {
+      if (err) return res.json(err)
+      res.redirect("/" + req.params.id)
+    }
+  )
+})
+
+app.get("/board/:id/deleteComment", (req, res) => {
+  comment.findByIdAndUpdate(
+    req.params.id,
+    {
+      $set: {
+        isDeleted: true,
+      },
+    },
+    (err, result) => {
+      if (err) return res.send(err)
+      res.redirect("/board/" + result.post)
+    }
+  )
+})
+
+app.get("/board/:id/updatePage", (req, res) => {
+  comment.findById(req.params.id, (err, result) => {
+    if (err) return res.send(err)
+    res.render("updateComment", { item: result })
+  })
+})
+
+app.post("/board/:id/updateComment", (req, res) => {
+  comment.findByIdAndUpdate(
+    req.params.id,
+    {
+      $set: {
+        text: req.body.comment,
+      },
+    },
+    (err, result) => {
+      if (err) return res.send(err)
+      res.redirect("/board/" + result.post)
+    }
+  )
+})
+
+app.post("/board/:id/replyComment", (req, res) => {
+  comment.findOne({ _id: req.params.id }, (err, result) => {
+    const comment_obj = new comment({
+      post: result.post,
+      parentComment: req.params.id,
+      isDeleted: false,
+      text: req.body.comment,
+    })
+
+    comment.create(comment_obj, function (err, comment) {
+      if (err) {
+        console.error(err)
+      } else {
+        res.redirect("/board/" + result.post)
+      }
+    })
   })
 })

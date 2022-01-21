@@ -29,7 +29,7 @@
     </div>
     <hr />
     <h1>댓글작성</h1>
-    <form action="/board/<%=item.id %>/createComment" method="POST">
+    <form action="/createComment/<%=item.id %>" method="POST">
       <div>
         <label> 내용: </label>
         <textarea id="text" name="comment" value="" rows="2"> </textarea>
@@ -39,9 +39,31 @@
       </div>
     </form>
 
+
     <h1>댓글</h1>
     <% if(comment){ %> <% comment.forEach(function(data) { %>
-    <li><%= data.text %> <%= data.createdAt %></li>
+    <p>
+      <% if(data.isDeleted == false) {%> <%= data.text %> <%= data.createdAt %>
+      <button onclick="location.href='/board/<%= data._id %>/deleteComment'">
+        삭제
+      </button>
+      <button onclick="location.href='/board/<%= data._id %>/updatePage'">
+        수정
+      </button>
+      <h4>대댓글</h4>
+      <form action = "/board/<%=data.id%>/replyComment" method = "POST">
+        <div>
+          <label>내용 :</label>
+          <textarea name="comment" id="text" rows="3"></textarea>
+        </div>
+        <div>
+          <button type="submit">SUbmit</button>
+        </div>
+      </form>
+      <% } %>
+      
+    </p>
     <% }) %> <% } %>
+
   </body>
 </html>
