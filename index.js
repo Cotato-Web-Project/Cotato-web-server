@@ -46,7 +46,7 @@ const storage = multer.diskStorage({
 
 const upload = multer({ storage: storage })
 
-//=================================| API |==================================//
+//=================================| API |=================================//
 
 // 홈화면 API (getAllpost)
 app.get("/", (req, res) => {
