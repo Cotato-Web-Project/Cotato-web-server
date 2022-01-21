@@ -6,6 +6,7 @@ const imageSchema = new mongoose.Schema({
   data: Buffer,
   contentType: String,
   required: false,
+  default: NaN,
 })
 
 const postSchema = new Schema({

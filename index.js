@@ -75,12 +75,16 @@ app.get("/updatePost/:id", function (req, res) {
 //게시글 등록 ( 이미지 추가 )
 app.post("/createPost", upload.single("image"), (req, res, next) => {
   db.collection("counter").findOne({ name: "게시물갯수" }, (err, result) => {
-    const id = result.totalPost
+    console.log(req)
     if (!req.file) {
       var obj = {
         title: req.body.title,
         desc: req.body.desc,
+<<<<<<< Updated upstream
         _id: id,
+=======
+        id: req.body.id,
+>>>>>>> Stashed changes
       }
     } else {
       var obj = {
@@ -92,7 +96,11 @@ app.post("/createPost", upload.single("image"), (req, res, next) => {
           ),
           contentType: "image/png",
         },
+<<<<<<< Updated upstream
         _id: id,
+=======
+        id: req.body.id,
+>>>>>>> Stashed changes
       }
     }
 
@@ -117,11 +125,11 @@ app.get("/search", async (req, res) => {
   if (req.query.option == "title") {
     options = [{ title: new RegExp(req.query.content) }]
   } else if (req.query.option == "content") {
-    options = [{ content: new RegExp(req.query.content) }]
+    options = [{ desc: new RegExp(req.query.content) }]
   } else if (req.query.option == "title+content") {
     options = [
       { title: new RegExp(req.query.content) },
-      { content: new RegExp(req.query.content) },
+      { desc: new RegExp(req.query.content) },
     ]
   } else {
     const err = new Error("검색 옵션이 없습니다.")
@@ -172,6 +180,7 @@ app.post("/createComment/:id", (req, res) => {
   })
 })
 
+<<<<<<< Updated upstream
 //게시글 수정(updatePost)
 app.post("/updatePost/:id", upload.single("image"), (req, res) => {
   posts.updateOne(
@@ -196,3 +205,60 @@ app.post("/updatePost/:id", upload.single("image"), (req, res) => {
     }
   )
 })
+=======
+app.get("/board/:id/deleteComment", (req, res) => {
+  comment.findByIdAndUpdate(
+    req.params.id,
+    {
+      $set: {
+        isDeleted: true,
+      },
+    },
+    (err, result) => {
+      if (err) return res.send(err)
+      res.redirect("/board/" + result.post)
+    }
+  )
+})
+
+app.get("/board/:id/updatePage", (req, res) => {
+  comment.findById(req.params.id, (err, result) => {
+    if (err) return res.send(err)
+    res.render("updateComment", { item: result })
+  })
+})
+
+app.post("/board/:id/updateComment", (req, res) => {
+  comment.findByIdAndUpdate(
+    req.params.id,
+    {
+      $set: {
+        text: req.body.comment,
+      },
+    },
+    (err, result) => {
+      if (err) return res.send(err)
+      res.redirect("/board/" + result.post)
+    }
+  )
+})
+
+app.post("/board/:id/replyComment", (req, res) => {
+  comment.findOne({ _id: req.params.id }, (err, result) => {
+    const comment_obj = new comment({
+      post: result.post,
+      parentComment: req.params.id,
+      isDeleted: false,
+      text: req.body.comment,
+    })
+
+    comment.create(comment_obj, function (err, comment) {
+      if (err) {
+        console.error(err)
+      } else {
+        res.redirect("/board/" + result.post)
+      }
+    })
+  })
+})
+>>>>>>> Stashed changes
