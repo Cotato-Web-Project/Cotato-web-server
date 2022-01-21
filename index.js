@@ -4,10 +4,10 @@ const port = 3000
 const bodyParser = require("body-parser")
 const config = require("./config/key")
 const posts = require("./models/post")
+const comment = require("./models/comment")
 const fs = require("fs")
 const path = require("path")
 const multer = require("multer")
-const comments = require("./models/comment")
 
 require("dotenv/config")
 app.set("view engine", "ejs")
@@ -66,7 +66,7 @@ app.get("/createPost", (req, res) => {
 
 //글수정 화면 API
 app.get("/updatePost/:id", function (req, res) {
-  posts.findOne({ _id: parseInt(req.params.id) }, (err, post) => {
+  posts.findOne({ id: parseInt(req.params.id) }, (err, post) => {
     if (err) return res.json(err)
     res.render("updatePost.ejs", { item: post })
   })
@@ -80,11 +80,15 @@ app.post("/createPost", upload.single("image"), (req, res, next) => {
       var obj = {
         title: req.body.title,
         desc: req.body.desc,
+<<<<<<< HEAD
 <<<<<<< Updated upstream
         _id: id,
 =======
         id: req.body.id,
 >>>>>>> Stashed changes
+=======
+        id: id,
+>>>>>>> f61f4f93a55c0ef05c5f61cc6db0aac7117b4c78
       }
     } else {
       var obj = {
@@ -96,11 +100,15 @@ app.post("/createPost", upload.single("image"), (req, res, next) => {
           ),
           contentType: "image/png",
         },
+<<<<<<< HEAD
 <<<<<<< Updated upstream
         _id: id,
 =======
         id: req.body.id,
 >>>>>>> Stashed changes
+=======
+        id: id,
+>>>>>>> f61f4f93a55c0ef05c5f61cc6db0aac7117b4c78
       }
     }
 
@@ -145,40 +153,79 @@ app.get("/search", async (req, res) => {
 // 선택된 게시글 정보를 불러오는 요청 API(toPost)
 app.get("/:id", (req, res) => {
   Promise.all([
-    posts.findOne({ _id: parseInt(req.params.id) }),
-    comments.find({ post: req.params.id }).sort("createdAt"),
-  ]).then(([post, comments]) => {
-    res.render("selected.ejs", { item: post, comment: comments })
+    posts.findOne({ id: parseInt(req.params.id) }),
+    comment.find({ post: req.body._id }).sort("createdAt"),
+  ]).then(([post, comment]) => {
+    res.render("selected.ejs", { item: post, comment: comment })
   })
 })
 
 //게시글 삭제 API(deletePost)
 app.delete("/deletePost", (req, res) => {
-  posts.deleteOne({ _id: parseInt(req.body.id) }, (err, post) => {
+  posts.deleteOne({ id: parseInt(req.body.id) }, (err, post) => {
     console.log(req.body.id)
     if (err) return res.send(err)
     res.redirect("/")
   })
 })
 
-//댓글 작성 화면
-app.get("/createComment/:id", (req, res) => {
-  posts.findOne({ _id: parseInt(req.params.id) }, (err, comment) => {
-    if (err) return res.json(err)
-    res.render("createComment.ejs", { item: comment })
-  })
+//게시글 수정(updatePost)
+app.post("/updatePost/:id", upload.single("image"), (req, res) => {
+  if (req.file) {
+    posts.updateOne(
+      { id: parseInt(req.params.id) },
+      {
+        $set: {
+          title: req.body.title,
+          desc: req.body.desc,
+          date: req.body.date,
+          img: {
+            data: fs.readFileSync(
+              path.join(__dirname + "/uploads/" + req.file.filename)
+            ),
+            contentType: "image/png",
+          },
+          id: parseInt(req.params.id),
+        },
+      },
+      (err, post) => {
+        if (err) return res.json(err)
+        res.redirect("/" + req.params.id)
+      }
+    )
+  } else {
+    posts.updateOne(
+      { id: parseInt(req.params.id) },
+      {
+        $set: {
+          title: req.body.title,
+          desc: req.body.desc,
+          date: req.body.date,
+        },
+      },
+      (err, post) => {
+        if (err) return res.json(err)
+        res.redirect("/" + req.params.id)
+      }
+    )
+  }
 })
 
-//댓글 등록 API(createcomment)
+//댓글 등록
 app.post("/createComment/:id", (req, res) => {
-  console.log(req)
-  comments.create(req.body, (err, comment) => {
+  // 1
+  obj = {
+    post: req.body._id,
+    idDeleted: false,
+    text: req.body.comment,
+  }
+  comment.create(obj, function (err, comment) {
     if (err) {
       return console.error(err)
     }
-    return res.redirect("/:id")
   })
 })
+<<<<<<< HEAD
 
 <<<<<<< Updated upstream
 //게시글 수정(updatePost)
@@ -262,3 +309,5 @@ app.post("/board/:id/replyComment", (req, res) => {
   })
 })
 >>>>>>> Stashed changes
+=======
+>>>>>>> f61f4f93a55c0ef05c5f61cc6db0aac7117b4c78

@@ -28,36 +28,17 @@
       </div>
     </div>
     <hr />
-    <h1>
-      댓글
-      <hr />
-    </h1>
-    <% if(comment) { %>
-    <% comment.forEach(function(data) { %>
-    <div>
-      <h5>날짜 <%= data.createdAt %></h5>
-      <p>내용 : <%= data %></p>
-    </div>
-    <% })%>
-    <% }%>
-    <h1> 댓글 작성 </h1>
-    <hr />
-    <div>
-      <form action="/createComment/<%=item.id %>" method="POST">
+    <h1>댓글작성</h1>
+    <form action="/createComment/<%=item.id %>" method="POST">
       <div>
         <label> 내용: </label>
-        <textarea
-        id="text"
-        name="comment"
-        value=""
-        rows="2"
-        >
-        </textarea>
+        <textarea id="text" name="comment" value="" rows="2"> </textarea>
       </div>
       <div>
         <button type="submit">Submit</button>
       </div>
     </form>
+<<<<<<< HEAD
 <<<<<<< Updated upstream
 =======
 
@@ -86,5 +67,12 @@
     </p>
     <% }) %> <% } %>
 >>>>>>> Stashed changes
+=======
+
+    <h1>댓글</h1>
+    <% if(comment){ %> <% comment.forEach(function(data) { %>
+    <li><%= data.text %> <%= data.createdAt %></li>
+    <% }) %> <% } %>
+>>>>>>> f61f4f93a55c0ef05c5f61cc6db0aac7117b4c78
   </body>
 </html>

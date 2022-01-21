@@ -2,15 +2,19 @@ const mongoose = require("mongoose")
 
 const commentSchema = mongoose.Schema(
   {
+    // 댓글 쓰는 게시물 아이디
     post: {
-      //populate
-      type: Number,
+      type: mongoose.Schema.Types.ObjectId,
       ref: "Post",
-      required: true,
     },
+    // 대댓글 구현시 부모 댓글이 무엇인지
     parentComment: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Comment",
+    },
+    isDeleted: {
+      type: Boolean,
+      default: false,
     },
     text: {
       type: String,
@@ -20,20 +24,14 @@ const commentSchema = mongoose.Schema(
       type: Number,
       default: 1,
     },
-    isDelete: {
-      type: Boolean,
-      default: false,
-    },
     createdAt: {
       type: Date,
       default: Date.now,
     },
-    upadtedAt: {
-      type: Date,
-    },
   },
-  { toObject: { virtuals: true }, toJson: { virtuals: true } }
+  { toObject: { virtuals: true }, toJSON: { virtuals: true } }
 )
+
 commentSchema.virtual("comments", {
   ref: "Comment",
   localField: "_id",
@@ -49,4 +47,6 @@ commentSchema
     this._childComments = v
   })
 
-module.exports = mongoose.model("Comment", commentSchema)
+const Comment = mongoose.model("Comment", commentSchema)
+
+module.exports = Comment
