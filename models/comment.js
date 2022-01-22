@@ -25,6 +25,7 @@ const commentSchema = mongoose.Schema(
       type: Date,
       default: Date.now,
     },
+    liked: { type: Number, default: 0 },
   },
   { toObject: { virtuals: true }, toJSON: { virtuals: true } }
 )

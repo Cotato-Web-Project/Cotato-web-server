@@ -12,7 +12,9 @@ const postSchema = new mongoose.Schema({
   desc: String,
   date: { type: Date, default: Date.now() },
   img: imageSchema,
-  //id: mongoose.Schema.Types.ObjectId,
+  file: { type: mongoose.Schema.Types.ObjectId, ref: "file" },
+  liked: { type: Number, default: 0 },
+  views: { type: Number, default: 0 },
 })
 
 //검색 인덱싱을 위해 추가

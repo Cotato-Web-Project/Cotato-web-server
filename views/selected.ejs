@@ -6,6 +6,9 @@
     <title>게시글</title>
   </head>
 
+  <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+
+
   <body>
     <h1 onclick="location.href='/'">게시글 목록</h1>
     <hr />
@@ -23,8 +26,17 @@
           <div>
             <h5>제목 : <%= item.title %></h5>
             <p>내용 : <%= item.desc %></p>
+            <p>조회수 : <%= item.views %></p>
           </div>
         </div>
+        <button onclick="location.href='/updatePost/<%=item.id%>'">수정</button>
+        <button class="delete" data-id="<%=item.id%>">삭제</button>
+        <br>
+        <p>
+          <button onclick="location.href='/board/like/<%=item.id%>'">좋아요</button> 
+          <%=item.liked%>
+        </p>
+        
       </div>
     </div>
     <hr />
@@ -38,8 +50,6 @@
         <button type="submit">Submit</button>
       </div>
     </form>
-
-
     <h1>댓글</h1>
     <% if(comment){ %> <% comment.forEach(function(data) { %>
     <p>
@@ -50,6 +60,8 @@
       <button onclick="location.href='/board/<%= data._id %>/updatePage'">
         수정
       </button>
+        <button onclick="location.href='/comment/like/<%=data._id%>'">좋아요</button> 
+        <%=data.liked%>
       <h4>대댓글</h4>
       <form action = "/board/<%=data.id%>/replyComment" method = "POST">
         <div>
@@ -61,9 +73,20 @@
         </div>
       </form>
       <% } %>
-      
     </p>
     <% }) %> <% } %>
-
   </body>
+
+  <script>
+    $(".delete").click(function(e) {
+      $.ajax({
+        method: "DELETE",
+        url: "/deletePost",
+        data: { id: e.target.dataset.id },
+      })
+        .always((result) => {
+          console.log(e)
+        }) 
+    })
+  </script>
 </html>
