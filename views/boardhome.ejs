@@ -28,7 +28,6 @@
     </h1>
     <div>
       <% items.forEach(function(data) { %>
-
       <div style="display: inline-block">
         <p>
           <% if(data.img) { %>
@@ -39,9 +38,10 @@
             height="200px"
           />
           <% }%>
-          <div onclick="location.href='/<%=data.id%>'">
+          <div onclick="location.href='/board/<%=data.id%>'">
             <h5>제목 : <%= data.title %></h5>
             <p>내용 : <%= data.desc %></p>
+            <p>조회수: <%= data.views %></p>
           </div>
         </p>
         <button onclick="location.href='/updatePost/<%=data.id%>'">수정</button>
