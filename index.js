@@ -1,6 +1,6 @@
 const express = require("express")
 const app = express()
-const port = 3000
+const port = 3001
 const bodyParser = require("body-parser")
 const config = require("./config/key")
 const posts = require("./models/post")
@@ -8,7 +8,6 @@ const comment = require("./models/comment")
 const fs = require("fs")
 const path = require("path")
 const multer = require("multer")
-require("dotenv/config")
 
 app.set("view engine", "ejs")
 app.use(bodyParser.urlencoded({ extended: true }))
@@ -169,32 +168,54 @@ app.delete("/deletePost", (req, res) => {
 })
 
 //게시글 수정(updatePost)
-app.post("/updatePost/:id", upload.array("image"), (req, res) => {
-  let img = req.file
-    ? {
-        data: fs.readFileSync(
-          path.join(__dirname + "/uploads/" + req.file.filename)
-        ),
-        contentType: "image/png",
-      }
-    : undefined
-  posts.findByIdAndUpdate(
-    req.params.id,
-    {
-      $set: {
-        title: req.body.title,
-        desc: req.body.desc,
-        date: req.body.date,
-        img: img,
-        id: req.params.id,
-      },
-    },
-    (err, post) => {
-      if (err) return res.json(err)
-      res.redirect("/board/" + req.params.id)
-    }
-  )
-})
+app.post(
+  "/updatePost/:id",
+  upload.fields([{ name: "image" }, { name: "file" }]),
+  (req, res) => {
+    console.log(req.files)
+    Promise.all([
+      req.files.image
+        ? {
+            data: fs.readFileSync(
+              path.join(
+                __dirname + "/uploads/" + req.files.image[0].originalname
+              )
+            ),
+            contentType: "image/png",
+          }
+        : undefined,
+      req.files.file
+        ? {
+            originalFileName: req.files.file[0].originalname,
+            serverFileName: req.files.file[0].filename,
+            size: req.files.file[0].size,
+            //   uploadedBy: {
+            //     type: mongoose.Schema.Types.ObjectId,
+            //     ref: "user",
+            //     required: true,
+            //   },
+            postId: req.body._id,
+          }
+        : undefined,
+    ]).then(([img, file]) => {
+      posts.findByIdAndUpdate(
+        req.params.id,
+        {
+          $set: {
+            title: req.body.title,
+            desc: req.body.desc,
+            img: img,
+            file: file,
+          },
+        },
+        (err, post) => {
+          if (err) return res.json(err)
+          res.redirect("/board/" + req.params.id)
+        }
+      )
+    })
+  }
+)
 
 //댓글등록
 app.post("/board/:id/createComment", (req, res) => {
@@ -272,6 +293,14 @@ app.post("/board/:id/replyComment", (req, res) => {
       }
     })
   })
+})
+
+app.get("/board/:id/comment", (req, res) => {
+  Promise(comment.find({ post: req.params.id }).sort("createdAt")).then(
+    (comment) => {
+      res.send(comment)
+    }
+  )
 })
 
 app.get("/board/like/:id", (req, res) => {
