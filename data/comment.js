@@ -1,4 +1,4 @@
-const mongoose = require("mongoose")
+import mongoose from "mongoose"
 
 const commentSchema = mongoose.Schema(
   {
@@ -47,4 +47,26 @@ commentSchema
 
 const Comment = mongoose.model("Comment", commentSchema)
 
-module.exports = Comment
+export async function getComment(post) {
+  return Comment.findById(post)
+}
+
+export async function createComment(post, text, parentComment) {
+  return new Comment({ post, text }).save()
+}
+
+export async function updateComment(id, text) {
+  return Comment.findByIdAndUpdate(id, { text }, { returnOriginal: false })
+}
+
+export async function deleteComment(id, isDeleted) {
+  return Comment.findByIdAndUpdate(id, { isDeleted })
+}
+
+export async function getParentComment(id) {
+  return Comment.findById(id)
+}
+
+export async function createReplyComment(post, parentComment, text, depth) {
+  return new Comment({ post, parentComment, text, depth }).save()
+}
