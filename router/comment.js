@@ -1,5 +1,9 @@
+//------------------------------------- import ---------------------------------------//
+
 import express from "express"
 import * as commentController from "../controller/comment.js"
+
+//------------------------------------- router ---------------------------------------//
 
 const router = express.Router()
 router.post("/:id/replyComment", commentController.createReplyComment)

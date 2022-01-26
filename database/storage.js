@@ -1,17 +1,24 @@
+//------------------------------------- import---------------------------------------//
 import express from "express"
 import multer from "multer"
 import fs from "fs"
 import path from "path"
 
+//------------------------------------- middleware ---------------------------------------//
+
+const __dirname = path.resolve()
 const app = express()
-app.use("/uploads", express.static("uploads"))
+app.use(express.static(path.join(__dirname + "/public")))
+
+//------------------------------------- storage setting ---------------------------------------//
 
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
-    cb(null, "uploads")
+    cb(null, "public/uploads")
   },
   filename: (req, file, cb) => {
-    cb(null, file.originalname)
+    const ext = path.extname(file.originalname)
+    cb(null, path.basename(file.originalname, ext) + Date.now() + ext)
   },
 })
 
