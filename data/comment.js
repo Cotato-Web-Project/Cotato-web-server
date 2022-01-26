@@ -1,13 +1,11 @@
-const mongoose = require("mongoose")
+import mongoose from "mongoose"
 
 const commentSchema = mongoose.Schema(
   {
-    // 댓글 쓰는 게시물 아이디
     post: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Post",
     },
-    // 대댓글 구현시 부모 댓글이 무엇인지
     parentComment: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Comment",
@@ -25,6 +23,7 @@ const commentSchema = mongoose.Schema(
       type: Date,
       default: Date.now,
     },
+    liked: { type: Number, default: 0 },
   },
   { toObject: { virtuals: true }, toJSON: { virtuals: true } }
 )
@@ -46,4 +45,26 @@ commentSchema
 
 const Comment = mongoose.model("Comment", commentSchema)
 
-module.exports = Comment
+export async function getComment(post) {
+  return Comment.findById(post)
+}
+
+export async function createComment(post, text, parentComment) {
+  return new Comment({ post, text }).save()
+}
+
+export async function updateComment(id, text) {
+  return Comment.findByIdAndUpdate(id, { text }, { returnOriginal: false })
+}
+
+export async function deleteComment(id, isDeleted) {
+  return Comment.findByIdAndUpdate(id, { isDeleted })
+}
+
+export async function getParentComment(id) {
+  return Comment.findById(id)
+}
+
+export async function createReplyComment(post, parentComment, text, depth) {
+  return new Comment({ post, parentComment, text, depth }).save()
+}
