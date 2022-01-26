@@ -8,11 +8,11 @@ const commentSchema = mongoose.Schema(
   {
     post: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "posts",
+      ref: "Post",
     },
     parentComment: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "comments",
+      ref: "Comment",
     },
     isDeleted: {
       type: Boolean,
