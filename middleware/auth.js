@@ -1,11 +1,11 @@
 import jwt from "jsonwebtoken"
 import { config } from "../config.js"
-import * as userRepository from "../data/auth.js"
+import * as userRepository from "../data/user.js"
 
 export const isAuth = async (req, res, next) => {
   const authHeader = req.get("Authorization")
   if (!(authHeader && authHeader.startsWith("Bearer "))) {
-    return res.status(401).json(AUTH_ERROR)
+    return res.status(401).json({ message: "Authentication Error" })
   }
 
   const token = authHeader.split(" ")[1]

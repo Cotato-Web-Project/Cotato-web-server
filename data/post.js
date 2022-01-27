@@ -1,7 +1,7 @@
 //------------------------------------- import ---------------------------------------//
 
 import mongoose from "mongoose"
-import * as userRepository from "./auth.js"
+import * as userRepository from "./user.js"
 import { useVirtualId } from "../database/database.js"
 
 // //------------------------------------- post Schema ---------------------------------------//

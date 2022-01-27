@@ -1,6 +1,7 @@
 //------------------------------------- import ---------------------------------------//
 
 import mongoose from "mongoose"
+import * as userRepository from "./user.js"
 
 //------------------------------------- comment Schema ---------------------------------------//
 
@@ -28,6 +29,10 @@ const commentSchema = mongoose.Schema(
       default: Date.now,
     },
     liked: { type: Number, default: 0 },
+    userId: {
+      type: String,
+      required: true,
+    },
   },
   { toObject: { virtuals: true }, toJSON: { virtuals: true } }
 )
@@ -60,19 +65,28 @@ export async function getComment(post) {
 //------------------------------------- 댓글 작성 ---------------------------------------//
 
 export async function createComment(post, text, parentComment) {
-  return new Comment({ post, text }).save()
+  return userRepository
+    .findById(userId)
+    .then((user) => new Comment({ post, text, userId }).save())
 }
 
 //------------------------------------- 댓글(대댓글) 수정 ---------------------------------------//
 
 export async function updateComment(id, text) {
-  return Comment.findByIdAndUpdate(id, { text }, { returnOriginal: false })
+  return userRepository
+    .findById(userId)
+    .then(
+      (user) =>
+        new Comment.findByIdAndUpdate(id, { text }, { returnOriginal: false })
+    )
 }
 
 //------------------------------------- 댓글(대댓글) 삭제 ---------------------------------------//
 
 export async function deleteComment(id, isDeleted) {
-  return Comment.findByIdAndUpdate(id, { isDeleted })
+  return userRepository
+    .findById(userId)
+    .then((user) => new Comment.findByIdAndUpdate(id, { isDeleted }))
 }
 
 //------------------------------------- 부모댓글 가져오기 ---------------------------------------//
@@ -82,5 +96,9 @@ export async function getParentComment(id) {
 
 //------------------------------------- 대댓글 작성 ---------------------------------------//
 export async function createReplyComment(post, parentComment, text, depth) {
-  return new Comment({ post, parentComment, text, depth }).save()
+  return userRepository
+    .findById(userId)
+    .then((user) =>
+      new Comment({ post, parentComment, text, depth, userId }).save()
+    )
 }
