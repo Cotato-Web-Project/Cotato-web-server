@@ -29,6 +29,7 @@ export async function createPost(req, res) {
   await upload.array("image")
   console.log(req)
   const { _id, title, desc } = req.body
+  const userId = req.userId
   const img_url = []
   req.files.image
     ? req.files.image.forEach((e) => {
@@ -42,7 +43,7 @@ export async function createPost(req, res) {
   //     })
   //   : undefined
 
-  const data = await Posts.createPost(_id, title, desc, img_url)
+  const data = await Posts.createPost(_id, title, desc, img_url, userId)
   res.status(201).json(data)
 }
 

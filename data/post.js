@@ -1,6 +1,8 @@
 //------------------------------------- import ---------------------------------------//
 
 import mongoose from "mongoose"
+import * as userRepository from "./auth.js"
+import { useVirtualId } from "../database/database.js"
 
 // //------------------------------------- post Schema ---------------------------------------//
 
@@ -12,6 +14,10 @@ const postSchema = new mongoose.Schema({
   // file: Array,
   liked: { type: Number, default: 0 },
   views: { type: Number, default: 0 },
+  userId: {
+    type: String,
+    required: true,
+  },
 })
 
 postSchema.index({ title: "text", content: "text" })
@@ -34,14 +40,16 @@ export async function getById(id) {
 
 //------------------------------------- 게시글 작성 ---------------------------------------//
 
-export async function createPost(id, title, desc, img, file) {
-  return new Post({
-    title: title,
-    desc: desc,
-    img: img,
-    id: id,
-    file: file,
-  }).save()
+export async function createPost(id, title, desc, img, userId) {
+  return userRepository.findById(userId).then((user) =>
+    new Post({
+      title: title,
+      desc: desc,
+      img: img,
+      id: id,
+      userId: userId,
+    }).save()
+  )
 }
 
 //------------------------------------- 게시글 수정 ---------------------------------------//

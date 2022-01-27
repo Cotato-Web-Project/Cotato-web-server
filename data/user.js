@@ -1,21 +1,25 @@
 import mongoose from "mongoose"
+import { useVirtualId } from "../database/database.js"
 
 const userSchema = mongoose.Schema({
-  name: String,
-  email: { type: String, trim: true, unique: 1 },
-  password: { type: String, minlength: 4 },
-  token: { type: String },
-  tokenExp: { type: Number },
+  name: { type: String, required: true },
+  email: { type: String, trim: true, unique: 1, required: true },
+  password: { type: String, minlength: 4, required: true },
+  username: { type: String, required: true },
 })
+
+useVirtualId(userSchema)
 
 const User = mongoose.model("User", userSchema)
 
-export async function register(name, email, password, token, tokenExp) {
-  return new User({
-    name: name,
-    email: email,
-    password: password,
-    token: token,
-    tokenExp: tokenExp,
-  }).save()
+export async function findByUsername(username) {
+  return User.findOne({ username })
+}
+
+export async function findById(id) {
+  return User.findById(id)
+}
+
+export async function createUser(user) {
+  return new User(user).save().then((data) => data.id)
 }
