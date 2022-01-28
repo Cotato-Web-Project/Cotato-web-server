@@ -7,6 +7,7 @@ import { isAuth } from "../middleware/auth.js"
 //------------------------------------- router ---------------------------------------//
 
 const router = express.Router()
+
 router.get("/search", postController.searchPosts)
 router.get("/", postController.getAllPosts)
 router.get("/:id", postController.getPost)

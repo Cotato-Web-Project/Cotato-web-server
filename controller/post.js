@@ -31,7 +31,7 @@ export async function createPost(req, res) {
   const { _id, title, desc } = req.body
   const userId = req.userId
   const img_url = []
-  req.files.image
+  req.body.image
     ? req.files.image.forEach((e) => {
         img_url.push(`http://localhost:3000/uploads/${e.filename}`)
       })
@@ -54,7 +54,7 @@ export async function updatePost(req, res) {
   const id = req.params.id
   const { title, desc } = req.body
   const img_url = []
-  req.file.image
+  req.body.image
     ? req.file.image.forEach((e) => {
         img_url.push(`http://localhost:3000/uploads/${e.filename}`)
       })
@@ -66,7 +66,13 @@ export async function updatePost(req, res) {
   //     })
   //   : undefined
 
+  const post = await Posts.getById(id)
+  if (post.userId !== req.userId) {
+    return res.sendStatus(403)
+  }
+
   const data = await Posts.updatePost(id, title, desc, img_url)
+
   res.status(200).json(data)
 }
 
@@ -74,6 +80,10 @@ export async function updatePost(req, res) {
 
 export async function deletePost(req, res) {
   const id = req.params.id
+  const post = await Posts.getById(id)
+  if (post.userId !== req.userId) {
+    return res.sendStatus(403)
+  }
   await Posts.deletePost(id)
   res.sendStatus(204)
 }

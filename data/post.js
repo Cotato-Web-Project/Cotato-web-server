@@ -1,7 +1,7 @@
 //------------------------------------- import ---------------------------------------//
 
 import mongoose from "mongoose"
-import * as userRepository from "./auth.js"
+import * as userRepository from "./user.js"
 import { useVirtualId } from "../database/database.js"
 
 // //------------------------------------- post Schema ---------------------------------------//
@@ -21,6 +21,8 @@ const postSchema = new mongoose.Schema({
 })
 
 postSchema.index({ title: "text", content: "text" })
+
+useVirtualId(postSchema)
 
 const Post = mongoose.model("Post", postSchema)
 
