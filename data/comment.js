@@ -19,7 +19,7 @@ const commentSchema = mongoose.Schema(
       type: Boolean,
       default: false,
     },
-    text: String,
+    text: { type: String, required: true },
     depth: {
       type: Number,
       default: 1,
@@ -58,8 +58,12 @@ const Comment = mongoose.model("Comment", commentSchema)
 
 //------------------------------------- 댓글 가져오기 ---------------------------------------//
 
-export async function getComment(post) {
-  return Comment.findById(post)
+export async function getComments(post) {
+  return Comment.find({ post: post })
+}
+
+export async function getComment(id) {
+  return Comment.findById(id)
 }
 
 //------------------------------------- 댓글 작성 ---------------------------------------//
@@ -70,30 +74,25 @@ export async function createComment(post, text, userId) {
     .then((user) => new Comment({ post, text, userId }).save())
 }
 
-//------------------------------------- 댓글(대댓글) 수정 ---------------------------------------//
+//------------------------------------- 댓글(대댓글) 수정 ------------------------------------//
 
-export async function updateComment(id, text, userId) {
-  return userRepository.findById(userId).then(
-    (user) =>
-      new Comment.findByIdAndUpdate(
-        id,
-        { text },
-        {
-          returnOriginal: false,
-        }
-      )
+export async function updateComment(id, text) {
+  return Comment.findByIdAndUpdate(
+    id,
+    { text },
+    {
+      returnOriginal: false,
+    }
   )
 }
 
-//------------------------------------- 댓글(대댓글) 삭제 ---------------------------------------//
+//------------------------------------- 댓글(대댓글) 삭제 ------------------------------------//
 
-export async function deleteComment(id, userId, isDeleted) {
-  return userRepository
-    .findById(userId)
-    .then((user) => new Comment.findByIdAndUpdate(id, userId, { isDeleted }))
+export async function deleteComment(id, isDeleted) {
+  return Comment.findByIdAndUpdate(id, { isDeleted })
 }
 
-//------------------------------------- 부모댓글 가져오기 ---------------------------------------//
+//------------------------------------- 부모댓글 가져오기---------------------------------------//
 export async function getParentComment(id) {
   return Comment.findById(id)
 }

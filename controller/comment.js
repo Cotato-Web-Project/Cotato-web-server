@@ -6,9 +6,15 @@ import * as Comment from "../data/comment.js"
 
 //------------------------------------- 댓글가져오기 ---------------------------------------//
 
-export async function getComment(req, res) {
+export async function getComments(req, res) {
   const post = req.params.id
-  const data = await Comment.getComment(post)
+  const data = await Comment.getComments(post)
+  res.status(200).send(data)
+}
+
+export async function getComment(req, res) {
+  const id = req.params.id
+  const data = await Comment.getComment(id)
   res.status(200).send(data)
 }
 
@@ -27,18 +33,26 @@ export async function createComment(req, res) {
 export async function updateComment(req, res) {
   const id = req.params.id
   const text = req.body.text
-  const userId = req.userId
-  const data = await Comment.updateComment(id, text, userId)
+  const comment = await Comment.getComment(id)
+  console.log(comment)
+  if (comment.userId !== req.userId) {
+    return res.sendStatus(403)
+  }
+  const data = await Comment.updateComment(id, text)
   res.status(200).send(data)
 }
 
 //------------------------------------- 댓글 삭제 ---------------------------------------//
 
 export async function deleteComment(req, res) {
-  const userId = req.userId
   const id = req.params.id
   const isDeleted = true
-  await Comment.deleteComment(id, userId, isDeleted)
+  const comment = await Comment.getComment(id)
+  console.log(comment)
+  if (comment.userId !== req.userId) {
+    return res.sendStatus(403)
+  }
+  await Comment.deleteComment(id, isDeleted)
   res.sendStatus(204)
 }
 

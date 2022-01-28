@@ -23,7 +23,7 @@ export async function getPost(req, res) {
     : res.status(400).json({ message: `Post id(${id}) not found` })
 }
 
-//------------------------------------- 게시글 작성(수정필요) ---------------------------------------//
+//------------------------------------- 게시글 작성(수정필요) ---------------------------------//
 
 export async function createPost(req, res) {
   await upload.array("image")
