@@ -22,6 +22,8 @@ const postSchema = new mongoose.Schema({
 
 postSchema.index({ title: "text", content: "text" })
 
+useVirtualId(postSchema)
+
 const Post = mongoose.model("Post", postSchema)
 
 // //------------------------------------- method ---------------------------------------//

@@ -64,7 +64,7 @@ export async function getComment(post) {
 
 //------------------------------------- 댓글 작성 ---------------------------------------//
 
-export async function createComment(post, text, parentComment) {
+export async function createComment(post, text, userId) {
   return userRepository
     .findById(userId)
     .then((user) => new Comment({ post, text, userId }).save())
@@ -72,21 +72,25 @@ export async function createComment(post, text, parentComment) {
 
 //------------------------------------- 댓글(대댓글) 수정 ---------------------------------------//
 
-export async function updateComment(id, text) {
-  return userRepository
-    .findById(userId)
-    .then(
-      (user) =>
-        new Comment.findByIdAndUpdate(id, { text }, { returnOriginal: false })
-    )
+export async function updateComment(id, text, userId) {
+  return userRepository.findById(userId).then(
+    (user) =>
+      new Comment.findByIdAndUpdate(
+        id,
+        { text },
+        {
+          returnOriginal: false,
+        }
+      )
+  )
 }
 
 //------------------------------------- 댓글(대댓글) 삭제 ---------------------------------------//
 
-export async function deleteComment(id, isDeleted) {
+export async function deleteComment(id, userId, isDeleted) {
   return userRepository
     .findById(userId)
-    .then((user) => new Comment.findByIdAndUpdate(id, { isDeleted }))
+    .then((user) => new Comment.findByIdAndUpdate(id, userId, { isDeleted }))
 }
 
 //------------------------------------- 부모댓글 가져오기 ---------------------------------------//
@@ -95,7 +99,13 @@ export async function getParentComment(id) {
 }
 
 //------------------------------------- 대댓글 작성 ---------------------------------------//
-export async function createReplyComment(post, parentComment, text, depth) {
+export async function createReplyComment(
+  post,
+  parentComment,
+  text,
+  depth,
+  userId
+) {
   return userRepository
     .findById(userId)
     .then((user) =>

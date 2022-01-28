@@ -25,9 +25,9 @@ export async function createComment(req, res) {
 //------------------------------------- 댓글 수정 ---------------------------------------//
 
 export async function updateComment(req, res) {
-  const userId = req.userId
   const id = req.params.id
   const text = req.body.text
+  const userId = req.userId
   const data = await Comment.updateComment(id, text, userId)
   res.status(200).send(data)
 }
@@ -38,7 +38,7 @@ export async function deleteComment(req, res) {
   const userId = req.userId
   const id = req.params.id
   const isDeleted = true
-  await Comment.deleteComment(id, isDeleted, userId)
+  await Comment.deleteComment(id, userId, isDeleted)
   res.sendStatus(204)
 }
 
