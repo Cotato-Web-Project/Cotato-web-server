@@ -10,7 +10,6 @@ import { upload } from "../database/storage.js"
 export async function getAllPosts(req, res) {
   const data = await Posts.getAllPost()
   res.status(200).json(data)
-  console.log(data)
 }
 
 //------------------------------------- 선택한 게시글 ---------------------------------------//
@@ -27,7 +26,6 @@ export async function getPost(req, res) {
 
 export async function createPost(req, res) {
   await upload.array("image")
-  console.log(req)
   const { _id, title, desc } = req.body
   const userId = req.userId
   const img_url = []
@@ -108,4 +106,10 @@ export async function searchPosts(req, res) {
   }
   const data = await Posts.searchPost(options)
   res.status(200).send(data)
+}
+
+export async function getByusername(req, res) {
+  const username = req.params.name
+  const recentPost = await Posts.getByusername(username)
+  res.json(recentPost)
 }

@@ -24,7 +24,8 @@ export async function createComment(req, res) {
   const userId = req.userId
   const post = req.params.id
   const text = req.body.text
-  const data = await Comment.createComment(post, text, userId)
+  const username = req.body.username
+  const data = await Comment.createComment(post, text, userId, username)
   res.status(200).send(data)
 }
 
@@ -74,4 +75,10 @@ export async function createReplyComment(req, res) {
     userId
   )
   res.status(200).send(data)
+}
+
+export async function getByusername(req, res) {
+  const username = req.params.name
+  const recentPost = await Comment.getByusername(username)
+  res.json(recentPost)
 }

@@ -8,6 +8,7 @@ import { connectDB } from "./database/database.js"
 import { config } from "./config.js"
 import cors from "cors"
 import helmet from "helmet"
+import mypageRouter from "./router/mypage.js"
 
 //---------------------------- middleware --------------------------------//
 
@@ -18,6 +19,7 @@ app.use(helmet())
 app.use("/", postRouter)
 app.use("/board", commentRouter)
 app.use("/users", userRouter)
+app.use("/mypage", mypageRouter)
 
 //---------------------------- server listen --------------------------------//
 

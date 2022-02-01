@@ -33,6 +33,10 @@ const commentSchema = mongoose.Schema(
       type: String,
       required: true,
     },
+    username: {
+      type: String,
+      required: true,
+    },
   },
   { toObject: { virtuals: true }, toJSON: { virtuals: true } }
 )
@@ -68,10 +72,10 @@ export async function getComment(id) {
 
 //------------------------------------- 댓글 작성 ---------------------------------------//
 
-export async function createComment(post, text, userId) {
+export async function createComment(post, text, userId, username) {
   return userRepository
     .findById(userId)
-    .then((user) => new Comment({ post, text, userId }).save())
+    .then((user) => new Comment({ post, text, userId, username }).save())
 }
 
 //------------------------------------- 댓글(대댓글) 수정 ------------------------------------//
@@ -110,4 +114,8 @@ export async function createReplyComment(
     .then((user) =>
       new Comment({ post, parentComment, text, depth, userId }).save()
     )
+}
+
+export async function getByusername(username) {
+  return Comment.find({ username: username }).sort({ createdAt: -1 })
 }

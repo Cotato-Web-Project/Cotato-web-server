@@ -5,6 +5,7 @@ import * as userRepository from "./user.js"
 import { useVirtualId } from "../database/database.js"
 
 // //------------------------------------- post Schema ---------------------------------------//
+let db = mongoose.connection
 
 const postSchema = new mongoose.Schema({
   title: String,
@@ -18,8 +19,12 @@ const postSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
+  username: {
+    type: String,
+    required: true,
+  },
+  postnumber: Number,
 })
-
 postSchema.index({ title: "text", content: "text" })
 
 useVirtualId(postSchema)
@@ -48,8 +53,8 @@ export async function createPost(id, title, desc, img, userId) {
       title: title,
       desc: desc,
       img: img,
-      id: id,
       userId: userId,
+      username: user.username,
     }).save()
   )
 }
@@ -74,4 +79,8 @@ export async function deletePost(id) {
 
 export async function searchPost(options) {
   return Post.find({ $or: options })
+}
+
+export async function getByusername(username) {
+  return Post.find({ username: username }).sort({ date: -1 })
 }
