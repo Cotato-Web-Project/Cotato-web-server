@@ -34,6 +34,16 @@ export async function login(req, res) {
   res.status(200).json({ token, username })
 }
 
+export async function getUser(req, res) {
+  const username = req.params.name
+  const data = await userRepository.findByUsername(username)
+  data
+    ? res
+        .status(200)
+        .json({ name: data.name, username: data.username, email: data.email })
+    : res.status(400).json({ message: `User name(${username}) not found` })
+}
+
 function createJwtToken(id) {
   return jwt.sign({ id }, config.jwt.secretKey, {
     expiresIn: config.jwt.expiresInSec,
