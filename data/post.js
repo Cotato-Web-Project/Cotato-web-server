@@ -4,8 +4,9 @@ import mongoose from "mongoose"
 import * as userRepository from "./user.js"
 import { useVirtualId } from "../database/database.js"
 
-// //------------------------------------- post Schema ---------------------------------------//
 let db = mongoose.connection
+
+// //------------------------------------- post Schema ---------------------------------------//
 
 const postSchema = new mongoose.Schema({
   title: String,
@@ -23,7 +24,7 @@ const postSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
-  postnumber: Number,
+  postNumber: Number,
 })
 postSchema.index({ title: "text", content: "text" })
 
@@ -49,13 +50,22 @@ export async function getById(id) {
 
 export async function createPost(id, title, desc, img, userId) {
   return userRepository.findById(userId).then((user) =>
-    new Post({
-      title: title,
-      desc: desc,
-      img: img,
-      userId: userId,
-      username: user.username,
-    }).save()
+    db.collection("counter").findOne({ name: "postNumber" }, (err, data) => {
+      const postNumber = data.postNumber
+      new Post({
+        title: title,
+        desc: desc,
+        img: img,
+        userId: userId,
+        username: user.username,
+        postNumber: postNumber,
+      }).save()
+
+      db.collection("counter").updateOne(
+        { name: "postNumber" },
+        { $inc: { postNumber: 1 } }
+      )
+    })
   )
 }
 
@@ -83,4 +93,10 @@ export async function searchPost(options) {
 
 export async function getByusername(username) {
   return Post.find({ username: username }).sort({ date: -1 })
+}
+
+//------------------------------------- 좋아요 기능 ---------------------------------------//
+
+export async function postLike(id) {
+  return Post.findByIdAndUpdate(id, { $inc: { liked: 1 } })
 }

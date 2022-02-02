@@ -14,5 +14,6 @@ router.get("/:id", postController.getPost)
 router.post("/createPost", isAuth, postController.createPost)
 router.put("/updatePost/:id", isAuth, postController.updatePost)
 router.delete("/deletePost/:id", isAuth, postController.deletePost)
+router.put("/postLike/:id", postController.postLike)
 
 export default router

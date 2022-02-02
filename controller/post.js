@@ -113,3 +113,11 @@ export async function getByusername(req, res) {
   const recentPost = await Posts.getByusername(username)
   res.json(recentPost)
 }
+
+//------------------------------------- 좋아요 기능 ---------------------------------------//
+
+export async function postLike(req, res) {
+  const id = req.params.id
+  const post = await Posts.postLike(id)
+  res.status(200).json({ liked: post.liked })
+}
