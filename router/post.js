@@ -9,10 +9,11 @@ import { isAuth } from "../middleware/auth.js"
 const router = express.Router()
 
 router.get("/search", postController.searchPosts)
-router.get("/", postController.getAllPosts)
+router.get("/getAll", postController.getAllPosts)
 router.get("/:id", postController.getPost)
 router.post("/createPost", isAuth, postController.createPost)
 router.put("/updatePost/:id", isAuth, postController.updatePost)
 router.delete("/deletePost/:id", isAuth, postController.deletePost)
+router.put("/postLike/:id", postController.postLike)
 
 export default router

@@ -49,3 +49,11 @@ function createJwtToken(id) {
     expiresIn: config.jwt.expiresInSec,
   }) // {토큰에 넣을 데이터, 비밀키, 옵션, 콜백함수}
 }
+
+export async function qualify(req, res) {
+  const user = await userRepository.findById(req.userId)
+  if (!user) {
+    return res.status(404).json({ message: "User not Found" })
+  }
+  res.status(200).json({ token: req.token, username: user.username })
+}

@@ -2,7 +2,7 @@
 
 import * as Comment from "../data/comment.js"
 
-//------------------------------------- Comment Controller ---------------------------------------//
+// ---------------------------------- Comment Controller -------------------------------------//
 
 //------------------------------------- 댓글가져오기 ---------------------------------------//
 
@@ -24,8 +24,8 @@ export async function createComment(req, res) {
   const userId = req.userId
   const post = req.params.id
   const text = req.body.text
-  const username = req.body.username
-  const data = await Comment.createComment(post, text, userId, username)
+  const data = await Comment.createComment(post, text, userId)
+  console.log(data)
   res.status(200).send(data)
 }
 
@@ -33,6 +33,7 @@ export async function createComment(req, res) {
 
 export async function updateComment(req, res) {
   const id = req.params.id
+  console.log(id)
   const text = req.body.text
   const comment = await Comment.getComment(id)
   console.log(comment)
@@ -53,8 +54,9 @@ export async function deleteComment(req, res) {
   if (comment.userId !== req.userId) {
     return res.sendStatus(403)
   }
-  await Comment.deleteComment(id, isDeleted)
-  res.sendStatus(204)
+  await Comment.deleteComment(id, isDeleted).then(() => {
+    res.json({ message: "삭제성공" })
+  })
 }
 
 //------------------------------------- 대댓글 작성 ---------------------------------------//

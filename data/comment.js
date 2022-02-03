@@ -38,6 +38,7 @@ const commentSchema = mongoose.Schema(
       required: true,
     },
   },
+  { versionKey: false },
   { toObject: { virtuals: true }, toJSON: { virtuals: true } }
 )
 
@@ -72,10 +73,15 @@ export async function getComment(id) {
 
 //------------------------------------- 댓글 작성 ---------------------------------------//
 
-export async function createComment(post, text, userId, username) {
-  return userRepository
-    .findById(userId)
-    .then((user) => new Comment({ post, text, userId, username }).save())
+export async function createComment(post, text, userId) {
+  return userRepository.findById(userId).then((user) =>
+    new Comment({
+      post: post,
+      text: text,
+      userId: userId,
+      username: user.username,
+    }).save()
+  )
 }
 
 //------------------------------------- 댓글(대댓글) 수정 ------------------------------------//
@@ -97,11 +103,13 @@ export async function deleteComment(id, isDeleted) {
 }
 
 //------------------------------------- 부모댓글 가져오기---------------------------------------//
+
 export async function getParentComment(id) {
   return Comment.findById(id)
 }
 
 //------------------------------------- 대댓글 작성 ---------------------------------------//
+
 export async function createReplyComment(
   post,
   parentComment,
@@ -112,7 +120,14 @@ export async function createReplyComment(
   return userRepository
     .findById(userId)
     .then((user) =>
-      new Comment({ post, parentComment, text, depth, userId }).save()
+      new Comment({
+        post: post,
+        parentComment: parentComment,
+        text: text,
+        depth: depth,
+        userId: userId,
+        username: user.username,
+      }).save()
     )
 }
 
