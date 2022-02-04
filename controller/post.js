@@ -26,7 +26,8 @@ export async function getPost(req, res) {
 
 export async function createPost(req, res) {
   await upload.array("image")
-  const { _id, title, desc } = req.body
+  const { title, desc } = req.body
+  console.log(req)
   const userId = req.userId
   const img_url = []
   req.body.image
@@ -41,7 +42,7 @@ export async function createPost(req, res) {
   //     })
   //   : undefined
 
-  const data = await Posts.createPost(_id, title, desc, img_url, userId)
+  const data = await Posts.createPost(title, desc, img_url, userId)
   res.status(201).json(data)
 }
 
@@ -82,8 +83,9 @@ export async function deletePost(req, res) {
   if (post.userId !== req.userId) {
     return res.sendStatus(403)
   }
-  await Posts.deletePost(id)
-  res.sendStatus(204)
+  await Posts.deletePost(id).then(() => {
+    res.json({ message: "삭제성공" })
+  })
 }
 
 //------------------------------------- 게시글 검색 ---------------------------------------//
@@ -114,10 +116,10 @@ export async function getByusername(req, res) {
   res.json(recentPost)
 }
 
-//------------------------------------- 좋아요 기능 ---------------------------------------//
+//------------------------------------- 게시글 좋아요 기능 ---------------------------------------//
 
 export async function postLike(req, res) {
   const id = req.params.id
   const post = await Posts.postLike(id)
-  res.status(200).json({ liked: post.liked })
+  res.status(200).json({ liked: post.liked + 1 })
 }

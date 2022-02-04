@@ -1,5 +1,4 @@
 import mongoose from "mongoose"
-import { useVirtualId } from "../database/database.js"
 
 const userSchema = mongoose.Schema({
   name: { type: String, required: true },
@@ -7,8 +6,6 @@ const userSchema = mongoose.Schema({
   password: { type: String, minlength: 4, required: true },
   username: { type: String, required: true },
 })
-
-useVirtualId(userSchema)
 
 const User = mongoose.model("User", userSchema)
 
