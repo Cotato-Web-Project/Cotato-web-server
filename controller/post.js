@@ -16,6 +16,7 @@ export async function getAllPosts(req, res) {
 
 export async function getPost(req, res) {
   const id = req.params.id
+  await Posts.postView(id)
   const data = await Posts.getById(id)
   data
     ? res.status(200).json(data)

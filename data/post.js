@@ -52,7 +52,7 @@ export async function createPost(title, desc, img_url, userId) {
       new Post({
         title: title,
         desc: desc,
-        img: img,
+        img: img_url,
         userId: userId,
         username: user.username,
         postNumber: postNumber,
@@ -96,4 +96,8 @@ export async function getByusername(username) {
 
 export async function postLike(id) {
   return Post.findByIdAndUpdate(id, { $inc: { liked: 1 } })
+}
+
+export async function postView(id) {
+  return Post.findByIdAndUpdate(id, { $inc: { views: 1 } })
 }
