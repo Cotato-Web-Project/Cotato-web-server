@@ -57,3 +57,14 @@ export async function qualify(req, res) {
   }
   res.status(200).json({ token: req.token, username: user.username })
 }
+
+export async function editInfo(req, res) {
+  const id = req.params.id
+  let { email, password, username } = req.body
+
+  password = await bcrypt.hash(password, config.bcrypt.saltRounds)
+
+  const data = await userRepository.editInfo(id, email, password, username)
+
+  res.status(200).json(data)
+}

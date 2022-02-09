@@ -1,3 +1,4 @@
+import { hash } from "bcrypt"
 import mongoose from "mongoose"
 
 const userSchema = mongoose.Schema({
@@ -19,4 +20,14 @@ export async function findById(id) {
 
 export async function createUser(user) {
   return new User(user).save().then((data) => data.id)
+}
+
+export async function editInfo(id, email, password, username) {
+  return User.findByIdAndUpdate(
+    id,
+    { email, password, username },
+    {
+      returnOriginal: false,
+    }
+  )
 }

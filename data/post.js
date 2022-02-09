@@ -52,7 +52,7 @@ export async function createPost(title, desc, img_url, userId) {
       new Post({
         title: title,
         desc: desc,
-        img: img,
+        img: img_url,
         userId: userId,
         username: user.username,
         postNumber: postNumber,
