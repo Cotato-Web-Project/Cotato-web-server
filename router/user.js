@@ -32,4 +32,6 @@ router.post("/signup", validateSignup, userController.signup)
 
 router.post("/signin", validateCredential, userController.login)
 
+router.put("/editInfo/:id", validateCredential, userController.editInfo)
+
 export default router
