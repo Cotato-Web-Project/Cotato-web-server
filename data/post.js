@@ -7,24 +7,28 @@ let db = mongoose.connection
 
 // //------------------------------------- post Schema ---------------------------------------//
 
-const postSchema = new mongoose.Schema({
-  title: String,
-  desc: String,
-  date: { type: Date, default: Date.now() },
-  img: Array,
-  // file: Array,
-  liked: { type: Number, default: 0 },
-  views: { type: Number, default: 0 },
-  userId: {
-    type: String,
-    required: true,
+const postSchema = new mongoose.Schema(
+  {
+    title: String,
+    desc: String,
+    date: { type: Date, default: Date.now() },
+    img: Array,
+    // file: Array,
+    liked: { type: Number, default: 0 },
+    views: { type: Number, default: 0 },
+    userId: {
+      type: String,
+      required: true,
+    },
+    username: {
+      type: String,
+      required: true,
+    },
+    postNumber: Number,
+    category: String,
   },
-  username: {
-    type: String,
-    required: true,
-  },
-  postNumber: Number,
-})
+  { versionKey: false }
+)
 postSchema.index({ title: "text", content: "text" })
 
 const Post = mongoose.model("Post", postSchema)
@@ -45,7 +49,7 @@ export async function getById(id) {
 
 //------------------------------------- 게시글 작성 ---------------------------------------//
 
-export async function createPost(title, desc, img_url, userId) {
+export async function createPost(title, desc, img_url, userId, category) {
   return userRepository.findById(userId).then((user) =>
     db.collection("counter").findOne({ name: "postNumber" }, (err, data) => {
       const postNumber = data.postNumber
@@ -56,6 +60,7 @@ export async function createPost(title, desc, img_url, userId) {
         userId: userId,
         username: user.username,
         postNumber: postNumber,
+        category: category,
       }).save()
 
       db.collection("counter").updateOne(
@@ -83,9 +88,13 @@ export async function deletePost(id) {
 }
 
 //------------------------------------- 게시글 검색 ---------------------------------------//
-
 export async function searchPost(options) {
   return Post.find({ $or: options })
+}
+
+export async function searchInCategory(category, options) {
+  const categoryPost = Post.find({ category: category })
+  return categoryPost.find({ $or: options })
 }
 
 export async function getByusername(username) {
@@ -100,4 +109,10 @@ export async function postLike(id) {
 
 export async function postView(id) {
   return Post.findByIdAndUpdate(id, { $inc: { views: 1 } })
+}
+
+//------------------------------------- 카테고리 게시글 가져오기 ---------------------------------------//
+
+export async function getCategory(category) {
+  return Post.find({ category: category }).sort({ createdAt: -1 })
 }

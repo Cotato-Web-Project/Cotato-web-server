@@ -13,6 +13,6 @@ router.get("/:id/getComments", commentController.getComments)
 router.get("/:id/getComment", isAuth, commentController.getComment)
 router.put("/:id/updateComment", isAuth, commentController.updateComment)
 router.put("/:id/deleteComment", isAuth, commentController.deleteComment)
-router.put("/commentLike/:id", commentController.commentLike)
+router.put("/:id/commentLike", commentController.commentLike)
 
 export default router

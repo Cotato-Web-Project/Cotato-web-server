@@ -28,8 +28,8 @@ export async function getPost(req, res) {
 export async function createPost(req, res) {
   await upload.array("image")
   const { title, desc } = req.body
-  console.log(req)
   const userId = req.userId
+  const category = req.params.category
   const img_url = []
   req.body.image
     ? req.files.image.forEach((e) => {
@@ -43,7 +43,8 @@ export async function createPost(req, res) {
   //     })
   //   : undefined
 
-  const data = await Posts.createPost(title, desc, img_url, userId)
+  const data = await Posts.createPost(title, desc, img_url, userId, category)
+
   res.status(201).json(data)
 }
 
@@ -123,4 +124,33 @@ export async function postLike(req, res) {
   const id = req.params.id
   const post = await Posts.postLike(id)
   res.status(200).json({ liked: post.liked + 1 })
+}
+
+export async function searchInCategory(req, res) {
+  let options = []
+  const category = req.params.category
+  if (req.query.option == "title") {
+    options = [{ title: new RegExp(req.query.title) }]
+  } else if (req.query.option == "desc") {
+    options = [{ desc: new RegExp(req.query.desc) }]
+  } else if (req.query.option == "title+desc") {
+    options = [
+      { title: new RegExp(req.query.title) },
+      { desc: new RegExp(req.query.desc) },
+    ]
+  } else {
+    const err = new Error("검색 옵션이 없습니다.")
+    err.status = 400
+    throw err
+  }
+  const data = await Posts.searchInCategory(category, options)
+  res.status(200).send(data)
+}
+
+//------------------------------------- 카테고리 게시글 가져오기---------------------------------------//
+
+export async function getCategory(req, res) {
+  const category = req.params.category
+  const data = await Posts.getCategory(category)
+  res.status(200).json(data)
 }

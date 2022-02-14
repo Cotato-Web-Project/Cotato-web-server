@@ -17,7 +17,7 @@ app.use(cors())
 app.use(express.json())
 app.use(helmet())
 app.use("/", postRouter)
-app.use("/board", commentRouter)
+app.use("/comment", commentRouter)
 app.use("/users", userRouter)
 app.use("/mypage", mypageRouter)
 
