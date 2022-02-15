@@ -147,7 +147,7 @@ export async function searchInCategory(req, res) {
   res.status(200).send(data)
 }
 
-//------------------------------------- 카테고리 게시글 가져오기---------------------------------------//
+//------------------------------------ 카테고리 게시글 가져오기-------------------------------------//
 
 export async function getCategory(req, res) {
   const category = req.params.category
