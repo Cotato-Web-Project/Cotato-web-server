@@ -23,12 +23,21 @@ export async function getPost(req, res) {
     : res.status(400).json({ message: `Post id(${id}) not found` })
 }
 
+export async function getPostbyNumber(req, res) {
+  const postNumber = parseInt(req.params.postNumber)
+  const data = await Posts.getByPostnumber(postNumber)
+  console.log(data)
+  data
+    ? res.status(200).json(data)
+    : res.status(400).json({ message: `Post id(${postNumber}) not found` })
+}
+
 //------------------------------------- 게시글 작성(수정필요) ---------------------------------//
 
 export async function createPost(req, res) {
   await upload.array("image")
   const { title, desc } = req.body
-  const userId = req.userId
+  // const userId = req.userId
   const category = req.params.category
   const img_url = []
   req.body.image
@@ -43,7 +52,7 @@ export async function createPost(req, res) {
   //     })
   //   : undefined
 
-  const data = await Posts.createPost(title, desc, img_url, userId, category)
+  const data = await Posts.createPost(title, desc, img_url, category)
 
   res.status(201).json(data)
 }
@@ -112,6 +121,8 @@ export async function searchPosts(req, res) {
   res.status(200).send(data)
 }
 
+//------------------------------------- 유저네임으로 검색 ---------------------------------------//
+
 export async function getByusername(req, res) {
   const username = req.params.name
   const recentPost = await Posts.getByusername(username)
@@ -153,4 +164,14 @@ export async function getCategory(req, res) {
   const category = req.params.category
   const data = await Posts.getCategory(category)
   res.status(200).json(data)
+}
+
+export async function img(req, res) {
+  await upload.single("image")
+  console.log("이미지")
+  console.log("전달받은 파일", req.file)
+  console.log("저장된 파일의 이름", req.file.filename)
+  const IMG_URL = `http://localhost:8080/uploads/${req.file.filename}`
+  console.log(IMG_URL)
+  res.json({ url: IMG_URL })
 }
