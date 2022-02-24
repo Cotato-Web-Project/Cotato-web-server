@@ -175,3 +175,16 @@ export async function img(req, res) {
   console.log(IMG_URL)
   res.json({ url: IMG_URL })
 }
+
+export async function nextPost(req, res) {
+  const postNumber = parseInt(req.params.postNumber)
+  const category = req.params.category
+  const nextdata = await Posts.nextPost(postNumber, category)
+  nextdata ? res.json(nextdata) : {}
+}
+export async function prevPost(req, res) {
+  const postNumber = parseInt(req.params.postNumber)
+  const category = req.params.category
+  const prevdata = await Posts.prevPost(postNumber, category)
+  prevdata ? res.json(prevdata) : {}
+}

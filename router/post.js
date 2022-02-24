@@ -19,6 +19,9 @@ router.delete("/deletePost/:id", postController.deletePost)
 router.put("/updatePost/:id", postController.updatePost)
 router.put("/postLike/:id", postController.postLike)
 router.post("/img", postController.img)
+router.get("/:category/:postNumber/nextPost", postController.nextPost)
+router.get("/:category/:postNumber/prevPost", postController.prevPost)
+
 export default router
 
 //공지사항, 정기모임, IT이슈, 스터디, 프로젝트, 소모임, 번개, 자유, 정보공유

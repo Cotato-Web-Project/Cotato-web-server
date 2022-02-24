@@ -119,3 +119,18 @@ export async function postView(id) {
 export async function getCategory(category) {
   return Post.find({ category: category }).sort({ createdAt: -1 })
 }
+
+export async function nextPost(postNumber, category) {
+  const data = Post.find({ category: category })
+  return data
+    .find({ postNumber: { $gt: postNumber } })
+    .sort({ date: -1 })
+    .limit(1)
+}
+export async function prevPost(postNumber, category) {
+  const data = Post.find({ category: category })
+  return data
+    .find({ postNumber: { $lt: postNumber } })
+    .sort({ date: -1 })
+    .limit(1)
+}
