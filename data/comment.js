@@ -29,14 +29,14 @@ const commentSchema = mongoose.Schema(
       default: Date.now,
     },
     liked: { type: Number, default: 0 },
-    userId: {
-      type: String,
-      required: true,
-    },
-    username: {
-      type: String,
-      required: true,
-    },
+    // userId: {
+    //   type: String,
+    //   required: true,
+    // },
+    // username: {
+    //   type: String,
+    //   required: true,
+    // },
   },
   { versionKey: false },
   { toObject: { virtuals: true }, toJSON: { virtuals: true } }
@@ -78,8 +78,8 @@ export async function createComment(post, text, userId) {
     new Comment({
       post: post,
       text: text,
-      userId: userId,
-      username: user.username,
+      // userId: userId,
+      // username: user.username,
     }).save()
   )
 }
