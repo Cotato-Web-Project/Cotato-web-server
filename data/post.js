@@ -76,9 +76,9 @@ export async function createPost(title, desc, img_url, category) {
 
 //------------------------------------- 게시글 수정 ---------------------------------------//
 
-export async function updatePost(id, title, desc, img, file) {
-  return Post.findByIdAndUpdate(
-    id,
+export async function updatePost(postNumber, title, desc, img, file) {
+  return Post.findOneAndUpdate(
+    { postNumber: postNumber },
     { title, desc, img, file },
     { returnOriginal: false }
   )
