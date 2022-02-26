@@ -52,17 +52,18 @@ export async function getByPostnumber(postNumber) {
 
 //------------------------------------- 게시글 작성 ---------------------------------------//
 
-export async function createPost(title, desc, img_url, userId, category) {
+export async function createPost(title, desc, category) {
+  // img_url,
   // return userRepository.findById(userId).then((user) =>
   db.collection("counter").findOne({ name: "postNumber" }, (err, data) => {
     const postNumber = data.postNumber
     new Post({
       title: title,
       desc: desc,
-      img: img_url,
-      userId: userId,
+      // img: img_url,
+      //userId: userId,
       // username: user.username,
-      // postNumber: postNumber,
+      postNumber: postNumber,
       category: category,
     }).save()
 

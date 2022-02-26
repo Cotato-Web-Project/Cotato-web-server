@@ -6,15 +6,20 @@ import commentRouter from "./router/comment.js"
 import userRouter from "./router/user.js"
 import { connectDB } from "./database/database.js"
 import { config } from "./config.js"
-import cors from "cors"
+//import cors from "cors"
 import helmet from "helmet"
 import mypageRouter from "./router/mypage.js"
+import cors from "cors"
+import multer from "multer"
+import path from "path"
 
 //---------------------------- middleware --------------------------------//
-
+const __dirname = path.resolve()
 const app = express()
-app.use(cors())
+
 app.use(express.json())
+app.use(cors())
+app.use(express.static(path.join(__dirname + "/public")))
 app.use(helmet())
 app.use("/", postRouter)
 app.use("/comment", commentRouter)
