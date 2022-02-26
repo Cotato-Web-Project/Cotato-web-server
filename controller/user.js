@@ -50,7 +50,8 @@ function createJwtToken(id) {
   }) // {토큰에 넣을 데이터, 비밀키, 옵션, 콜백함수}
 }
 
-export async function qualify(req, res) {
+export async function me(req, res) {
+  console.log(req.userId)
   const user = await userRepository.findById(req.userId)
   if (!user) {
     return res.status(404).json({ message: "User not Found" })

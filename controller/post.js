@@ -25,6 +25,7 @@ export async function getPost(req, res) {
 
 export async function getPostbyNumber(req, res) {
   const postNumber = parseInt(req.params.postNumber)
+  await Posts.postView(postNumber)
   const data = await Posts.getByPostnumber(postNumber)
   console.log(data)
   data
@@ -39,6 +40,7 @@ export async function createPost(req, res) {
   const { title, desc } = req.body
   // const userId = req.userId
   const category = req.params.category
+  console.log(category)
   const img_url = []
   req.body.image
     ? req.files.image.forEach((e) => {

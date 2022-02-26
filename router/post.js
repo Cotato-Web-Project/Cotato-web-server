@@ -8,19 +8,19 @@ import { isAuth } from "../middleware/auth.js"
 
 const router = express.Router()
 
-router.get("/search", postController.searchPosts)
-router.get("/getAll", postController.getAllPosts)
-router.get("/:category", postController.getCategory)
-router.get("/:category/:postNumber", postController.getPostbyNumber)
+router.get("/search", isAuth, postController.searchPosts)
+router.get("/getAll", isAuth, postController.getAllPosts)
+router.get("/:category", isAuth, postController.getCategory)
+router.get("/:category/:postNumber", isAuth, postController.getPostbyNumber)
 // router.get("/:id", postController.getPost)
-router.get("/:category/search", postController.searchInCategory)
-router.post("/:category/createPost", postController.createPost)
-router.delete("/deletePost/:id", postController.deletePost)
-router.put("/updatePost/:id", postController.updatePost)
-router.put("/postLike/:id", postController.postLike)
-router.post("/img", postController.img)
-router.get("/:category/:postNumber/nextPost", postController.nextPost)
-router.get("/:category/:postNumber/prevPost", postController.prevPost)
+router.get("/:category/search", isAuth, postController.searchInCategory)
+router.post("/:category/createPost", isAuth, postController.createPost)
+router.delete("/deletePost/:id", isAuth, postController.deletePost)
+router.put("/updatePost/:id", isAuth, postController.updatePost)
+router.put("/postLike/:id", isAuth, postController.postLike)
+// router.post("/img", postController.img)
+router.get("/:category/:postNumber/nextPost", isAuth, postController.nextPost)
+router.get("/:category/:postNumber/prevPost", isAuth, postController.prevPost)
 
 export default router
 

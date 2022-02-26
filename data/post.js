@@ -1,7 +1,7 @@
 //------------------------------------- import ---------------------------------------//
 
 import mongoose from "mongoose"
-import * as userRepository from "./user.js"
+// import * as userRepository from "./user.js"
 
 let db = mongoose.connection
 
@@ -52,7 +52,7 @@ export async function getByPostnumber(postNumber) {
 
 //------------------------------------- 게시글 작성 ---------------------------------------//
 
-export async function createPost(title, desc, img_url, userId, category) {
+export async function createPost(title, desc, img_url, category) {
   // return userRepository.findById(userId).then((user) =>
   db.collection("counter").findOne({ name: "postNumber" }, (err, data) => {
     const postNumber = data.postNumber
@@ -60,9 +60,9 @@ export async function createPost(title, desc, img_url, userId, category) {
       title: title,
       desc: desc,
       img: img_url,
-      userId: userId,
+      // userId: userId,
       // username: user.username,
-      // postNumber: postNumber,
+      postNumber: postNumber,
       category: category,
     }).save()
 
@@ -110,8 +110,11 @@ export async function postLike(id) {
   return Post.findByIdAndUpdate(id, { $inc: { liked: 1 } })
 }
 
-export async function postView(id) {
-  return Post.findByIdAndUpdate(id, { $inc: { views: 1 } })
+export async function postView(postNumber) {
+  return Post.findOneAndUpdate(
+    { postNumber: postNumber },
+    { $inc: { views: 1 } }
+  )
 }
 
 //------------------------------------- 카테고리 게시글 가져오기 ---------------------------------------//
@@ -127,6 +130,7 @@ export async function nextPost(postNumber, category) {
     .sort({ date: -1 })
     .limit(1)
 }
+
 export async function prevPost(postNumber, category) {
   const data = Post.find({ category: category })
   return data
