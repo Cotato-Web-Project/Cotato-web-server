@@ -1,7 +1,7 @@
 //------------------------------------- import ---------------------------------------//
 
 import mongoose from "mongoose"
-import * as userRepository from "./user.js"
+// import * as userRepository from "./user.js"
 
 let db = mongoose.connection
 
@@ -52,16 +52,15 @@ export async function getByPostnumber(postNumber) {
 
 //------------------------------------- 게시글 작성 ---------------------------------------//
 
-export async function createPost(title, desc, category) {
-  // img_url,
+export async function createPost(title, desc, img_url, category) {
   // return userRepository.findById(userId).then((user) =>
   db.collection("counter").findOne({ name: "postNumber" }, (err, data) => {
     const postNumber = data.postNumber
     new Post({
       title: title,
       desc: desc,
-      // img: img_url,
-      //userId: userId,
+      img: img_url,
+      // userId: userId,
       // username: user.username,
       postNumber: postNumber,
       category: category,
@@ -77,9 +76,9 @@ export async function createPost(title, desc, category) {
 
 //------------------------------------- 게시글 수정 ---------------------------------------//
 
-export async function updatePost(id, title, desc, img, file) {
-  return Post.findByIdAndUpdate(
-    id,
+export async function updatePost(postNumber, title, desc, img, file) {
+  return Post.findOneAndUpdate(
+    { postNumber: postNumber },
     { title, desc, img, file },
     { returnOriginal: false }
   )
@@ -111,8 +110,11 @@ export async function postLike(id) {
   return Post.findByIdAndUpdate(id, { $inc: { liked: 1 } })
 }
 
-export async function postView(id) {
-  return Post.findByIdAndUpdate(id, { $inc: { views: 1 } })
+export async function postView(postNumber) {
+  return Post.findOneAndUpdate(
+    { postNumber: postNumber },
+    { $inc: { views: 1 } }
+  )
 }
 
 //------------------------------------- 카테고리 게시글 가져오기 ---------------------------------------//
@@ -128,6 +130,7 @@ export async function nextPost(postNumber, category) {
     .sort({ date: -1 })
     .limit(1)
 }
+
 export async function prevPost(postNumber, category) {
   const data = Post.find({ category: category })
   return data

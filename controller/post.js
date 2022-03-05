@@ -25,8 +25,8 @@ export async function getPost(req, res) {
 
 export async function getPostbyNumber(req, res) {
   const postNumber = parseInt(req.params.postNumber)
+  await Posts.postView(postNumber)
   const data = await Posts.getByPostnumber(postNumber)
-  console.log(data)
   data
     ? res.status(200).json(data)
     : res.status(400).json({ message: `Post id(${postNumber}) not found` })
@@ -39,13 +39,13 @@ export async function createPost(req, res) {
   const { title, desc } = req.body
   // const userId = req.userId
   const category = req.params.category
-  // const img_url = []
-  // req.body.image
-  //   ? req.files.image.forEach((e) => {
-  //       img_url.push(`http://localhost:8080/uploads/${e.filename}`)
-  //     })
-  //   : undefined
-
+  console.log(category)
+  const img_url = []
+  req.body.image
+    ? req.files.image.forEach((e) => {
+        img_url.push(`http://localhost:3000/uploads/${e.filename}`)
+      })
+    : undefined
   // const file_url = []
   // req.files.file
   //   ? req.files.file.forEach((e) => {
@@ -61,8 +61,8 @@ export async function createPost(req, res) {
 //------------------------------------- 게시글 수정(수정필요) ---------------------------------------//
 
 export async function updatePost(req, res) {
-  //await upload.array([{ name: "image" }, { name: "file" }])
-  const id = req.params.id
+  await upload.array({ name: "image" })
+  const postNumber = req.params.postNumber
   const { title, desc } = req.body
   const img_url = []
   req.body.image
@@ -77,12 +77,12 @@ export async function updatePost(req, res) {
   //     })
   //   : undefined
 
-  const post = await Posts.getById(id)
+  const post = await Posts.getByPostnumber(postNumber)
   if (post.userId !== req.userId) {
     return res.sendStatus(403)
   }
 
-  const data = await Posts.updatePost(id, title, desc) //, img_url
+  const data = await Posts.updatePost(postNumber, title, desc, img_url)
 
   res.status(200).json(data)
 }

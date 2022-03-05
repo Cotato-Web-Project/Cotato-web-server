@@ -2,6 +2,7 @@ import express from "express"
 import * as userController from "../controller/user.js"
 import { body } from "express-validator"
 import { validate } from "../middleware/validator.js"
+import { isAuth } from "../middleware/auth.js"
 
 const router = express.Router()
 
@@ -12,7 +13,7 @@ const validateCredential = [
     .withMessage("username should be at least 5 characters"),
   body("password")
     .trim()
-    .isLength({ min: 6 })
+    .isLength({ min: 5 })
     .withMessage("password should be at least 5 characters"),
   validate,
 ]
@@ -28,10 +29,9 @@ const validateSignup = [
   validate,
 ]
 
-router.post("/signup", validateSignup, userController.signup)
-
+router.get("/me", isAuth, userController.me)
 router.post("/signin", validateCredential, userController.login)
-
-router.put("/editInfo/:id", validateCredential, userController.editInfo)
+router.post("/signup", validateSignup, userController.signup)
+router.put("/editInfo/:id", isAuth, validateCredential, userController.editInfo)
 
 export default router
