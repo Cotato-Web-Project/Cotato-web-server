@@ -37,23 +37,16 @@ export async function getPostbyNumber(req, res) {
 export async function createPost(req, res) {
   await upload.array("image")
   const { title, desc } = req.body
-  // const userId = req.userId
+  const userId = req.userId
   const category = req.params.category
-  console.log(category)
   const img_url = []
   req.body.image
     ? req.files.image.forEach((e) => {
         img_url.push(`http://localhost:3000/uploads/${e.filename}`)
       })
     : undefined
-  // const file_url = []
-  // req.files.file
-  //   ? req.files.file.forEach((e) => {
-  //       file_url.push(`http://localhost:3000/uploads/${e.filename}`)
-  //     })
-  //   : undefined
 
-  const data = await Posts.createPost(title, desc, img_url, category)
+  const data = await Posts.createPost(title, desc, img_url, category, userId) //img_url,
 
   res.status(201).json(data)
 }
@@ -61,21 +54,16 @@ export async function createPost(req, res) {
 //------------------------------------- 게시글 수정(수정필요) ---------------------------------------//
 
 export async function updatePost(req, res) {
-  await upload.array({ name: "image" })
+  await upload.single({ name: "image" })
   const postNumber = req.params.postNumber
+
   const { title, desc } = req.body
   const img_url = []
   req.body.image
     ? req.file.image.forEach((e) => {
-        img_url.push(`http://localhost:3000/uploads/${e.filename}`)
+        img_url.push(`http://localhost:8080/uploads/${e.filename}`)
       })
     : undefined
-  // const file_url = []
-  // req.files.file
-  //   ? req.files.file.forEach((e) => {
-  //       file_url.push(`http://localhost:3000/uploads/${e.filename}`)
-  //     })
-  //   : undefined
 
   const post = await Posts.getByPostnumber(postNumber)
   if (post.userId !== req.userId) {
@@ -169,12 +157,16 @@ export async function getCategory(req, res) {
 
 export async function img(req, res) {
   await upload.single("image")
-  console.log("이미지")
-  console.log("전달받은 파일", req.file)
-  console.log("저장된 파일의 이름", req.file.filename)
-  const IMG_URL = `http://localhost:8080/uploads/${req.file.filename}`
-  console.log(IMG_URL)
-  res.json({ url: IMG_URL })
+  const result = req.file
+  console.log(result)
+  // console.log("전달받은 파일", req.img)
+  // console.log("전달", req.file)
+  // console.log("으악", req.body)
+
+  // console.log("저장된 파일의 이름", req.file.filename)
+  // const IMG_URL = `http://localhost:8080/uploads/${req.img.filename}`
+  // console.log(IMG_URL)
+  // res.json({ url: IMG_URL })
 }
 
 export async function nextPost(req, res) {
