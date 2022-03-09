@@ -16,10 +16,10 @@ const postSchema = new mongoose.Schema(
     // file: Array,
     liked: { type: Number, default: 0 },
     views: { type: Number, default: 0 },
-    // userId: {
-    //   type: String,
-    //   required: true,
-    // },
+    userId: {
+      type: String,
+      required: true,
+    },
     // username: {
     //   type: String,
     //   required: true,
@@ -52,7 +52,7 @@ export async function getByPostnumber(postNumber) {
 
 //------------------------------------- 게시글 작성 ---------------------------------------//
 
-export async function createPost(title, desc, img_url, category) {
+export async function createPost(title, desc, img_url, category, userId) {
   // return userRepository.findById(userId).then((user) =>
   db.collection("counter").findOne({ name: "postNumber" }, (err, data) => {
     const postNumber = data.postNumber
@@ -60,8 +60,7 @@ export async function createPost(title, desc, img_url, category) {
       title: title,
       desc: desc,
       img: img_url,
-      // userId: userId,
-      // username: user.username,
+      userId: userId,
       postNumber: postNumber,
       category: category,
     }).save()

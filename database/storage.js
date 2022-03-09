@@ -1,5 +1,5 @@
 //------------------------------------- import---------------------------------------//
-import { log } from "console"
+
 import express from "express"
 import multer from "multer"
 import path from "path"
@@ -8,7 +8,6 @@ import path from "path"
 
 //------------------------------------- middleware ---------------------------------------//
 
-const __dirname = path.resolve()
 const app = express()
 
 //------------------------------------- storage setting ---------------------------------------//
