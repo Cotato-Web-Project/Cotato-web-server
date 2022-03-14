@@ -2,6 +2,7 @@
 
 import * as Posts from "../data/post.js"
 import { upload } from "../database/storage.js"
+import * as Like from "../data/like.js"
 
 //------------------------------------- Post Controller ---------------------------------------//
 
@@ -36,7 +37,7 @@ export async function getPostbyNumber(req, res) {
 
 export async function createPost(req, res) {
   await upload.array("image")
-  const { title, desc } = req.body
+  const { title, desc, fileURL } = req.body
   const userId = req.userId
   const category = req.params.category
   const img_url = []
@@ -46,7 +47,14 @@ export async function createPost(req, res) {
       })
     : undefined
 
-  const data = await Posts.createPost(title, desc, img_url, category, userId) //img_url,
+  const data = await Posts.createPost(
+    title,
+    desc,
+    img_url,
+    category,
+    fileURL,
+    userId
+  ) //img_url,
 
   res.status(201).json(data)
 }
@@ -120,12 +128,6 @@ export async function getByusername(req, res) {
 
 //------------------------------------- 게시글 좋아요 기능 ---------------------------------------//
 
-export async function postLike(req, res) {
-  const id = req.params.id
-  const post = await Posts.postLike(id)
-  res.status(200).json({ liked: post.liked + 1 })
-}
-
 export async function searchInCategory(req, res) {
   let options = []
   const category = req.params.category
@@ -180,4 +182,64 @@ export async function prevPost(req, res) {
   const category = req.params.category
   const prevdata = await Posts.prevPost(postNumber, category)
   prevdata ? res.json(prevdata) : {}
+}
+
+// 좋아요 ------------------------------------------------------------------
+
+export async function getLike(req, res) {
+  let info = {}
+
+  if (req.body.postId) {
+    info = { postId: req.body.postId }
+  } else {
+    info = { commentId: req.body.commentId }
+  }
+  console.log(info)
+  await Like.getLike(info)
+    .then((result) => {
+      res.status(200).json({ success: true, result })
+    })
+    .catch((err) => {
+      console.log(err)
+      res.status(400).json({ success: false, err })
+    })
+}
+
+export async function upLike(req, res) {
+  let info = {}
+
+  if (req.body.postId) {
+    info = { postId: req.body.postId, userId: req.body.userId }
+  } else {
+    info = { commentId: req.body.commentId, userId: req.body.userId }
+  }
+
+  const already =
+    (await Like.getLike(info)) == 0 ? undefined : await Like.getLike(info)
+  console.log(already)
+  if (already != undefined) {
+    res.json("이미 좋아요를 누른 게시물입니다!")
+  } else {
+    await Like.upLike(info).then((result) => {
+      res.status(200).json({ success: true, result })
+    })
+  }
+}
+
+export async function unLike(req, res) {
+  let info = {}
+
+  if (req.body.postId) {
+    info = { postId: req.body.postId, userId: req.body.userId }
+  } else {
+    info = { commentId: req.body.commentId, userId: req.body.userId }
+  }
+
+  await Like.unLike(info).then((result) => {
+    if (result == null) {
+      res.status(400).json("아직 좋아요를 누르지 않은 게시물입니다.")
+    } else {
+      res.json({ success: true, result })
+    }
+  })
 }

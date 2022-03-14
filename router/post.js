@@ -10,6 +10,7 @@ const router = express.Router()
 router.get("/favicon.ico", (req, res) => res.status(204))
 router.get("/search", postController.searchPosts)
 router.get("/getAll", postController.getAllPosts)
+router.get("/getLike", postController.getLike)
 
 router.get("/:category", postController.getCategory)
 router.get("/:category/:postNumber", postController.getPostbyNumber)
@@ -17,8 +18,11 @@ router.get("/:category/:postNumber", postController.getPostbyNumber)
 router.post("/:category/createPost", isAuth, postController.createPost)
 router.get("/:category/search", postController.searchInCategory)
 router.delete("/deletePost/:id", postController.deletePost)
+router.delete("/unLike", postController.unLike)
 router.put("/updatePost/:id", postController.updatePost)
-router.put("/postLike/:id", postController.postLike)
+
+router.post("/upLike", postController.upLike)
+
 router.get("/:category/:postNumber/nextPost", postController.nextPost)
 router.get("/:category/:postNumber/prevPost", postController.prevPost)
 

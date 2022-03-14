@@ -23,6 +23,7 @@ app.use(express.urlencoded())
 
 app.use(express.static(path.join(__dirname + "/public")))
 app.use(helmet())
+
 app.use("/cotato", postRouter)
 app.use("/comment", commentRouter)
 app.use("/users", userRouter)
@@ -58,6 +59,17 @@ app.post("/cotato/img", upload.single("img"), (req, res) => {
   const IMG_URL = `http://localhost:8080/uploads/${req.file.filename}`
   console.log(IMG_URL)
   res.json({ url: IMG_URL })
+})
+app.post("/cotato/files", upload.array("upload_file"), (req, res) => {
+  // 해당 라우터가 정상적으로 작동하면 public/uploads에 이미지가 업로드된다.
+  // 업로드된 이미지의 URL 경로를 프론트엔드로 반환한다.
+  const file_URL = []
+  req.files.forEach((e) => {
+    console.log(e)
+    file_URL.push(e)
+  })
+  file_URL.push(`http://localhost:8080/uploads/${req.files.filename}`)
+  res.json(file_URL)
 })
 
 connectDB()
