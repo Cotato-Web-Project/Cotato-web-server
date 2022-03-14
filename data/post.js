@@ -14,6 +14,7 @@ const postSchema = new mongoose.Schema(
     date: { type: Date, default: Date.now() },
     img: Array,
     // file: Array,
+    file: mongoose.Schema.Types.ObjectId,
     liked: { type: Number, default: 0 },
     views: { type: Number, default: 0 },
     userId: {
@@ -52,7 +53,14 @@ export async function getByPostnumber(postNumber) {
 
 //------------------------------------- 게시글 작성 ---------------------------------------//
 
-export async function createPost(title, desc, img_url, category, userId) {
+export async function createPost(
+  title,
+  desc,
+  img_url,
+  // attachment,
+  category,
+  userId
+) {
   // return userRepository.findById(userId).then((user) =>
   db.collection("counter").findOne({ name: "postNumber" }, (err, data) => {
     const postNumber = data.postNumber
@@ -60,6 +68,7 @@ export async function createPost(title, desc, img_url, category, userId) {
       title: title,
       desc: desc,
       img: img_url,
+      // attachment: attachment,
       userId: userId,
       postNumber: postNumber,
       category: category,

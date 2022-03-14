@@ -3,6 +3,7 @@
 import express from "express"
 import * as postController from "../controller/post.js"
 import { isAuth } from "../middleware/auth.js"
+import { upload } from "../database/storage.js"
 
 //------------------------------------- router ---------------------------------------//
 
@@ -14,7 +15,12 @@ router.get("/getAll", postController.getAllPosts)
 router.get("/:category", postController.getCategory)
 router.get("/:category/:postNumber", postController.getPostbyNumber)
 // router.get("/:id", postController.getPost)
-router.post("/:category/createPost", isAuth, postController.createPost)
+router.post(
+  "/:category/createPost",
+  isAuth,
+  upload.single("attachment"),
+  postController.createPost
+)
 router.get("/:category/search", postController.searchInCategory)
 router.delete("/deletePost/:id", postController.deletePost)
 router.put("/updatePost/:id", postController.updatePost)

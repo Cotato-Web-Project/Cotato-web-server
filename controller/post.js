@@ -35,10 +35,14 @@ export async function getPostbyNumber(req, res) {
 //------------------------------------- 게시글 작성(수정필요) ---------------------------------//
 
 export async function createPost(req, res) {
-  await upload.array("image")
+  // await upload.array("image")
   const { title, desc } = req.body
   const userId = req.userId
   const category = req.params.category
+  console.log(req.file)
+  // const attachment = await Files.createNewInstance(req.file)
+  // req.body.attachment = attachment
+
   const img_url = []
   req.body.image
     ? req.files.image.forEach((e) => {
@@ -46,7 +50,14 @@ export async function createPost(req, res) {
       })
     : undefined
 
-  const data = await Posts.createPost(title, desc, img_url, category, userId) //img_url,
+  const data = await Posts.createPost(
+    title,
+    desc,
+    img_url,
+    // attachment,
+    category,
+    userId
+  ) //img_url,
 
   res.status(201).json(data)
 }
