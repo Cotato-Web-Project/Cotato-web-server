@@ -20,6 +20,7 @@ const postSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
+    fileURL: Array,
     // username: {
     //   type: String,
     //   required: true,
@@ -52,7 +53,14 @@ export async function getByPostnumber(postNumber) {
 
 //------------------------------------- 게시글 작성 ---------------------------------------//
 
-export async function createPost(title, desc, img_url, category, userId) {
+export async function createPost(
+  title,
+  desc,
+  img_url,
+  category,
+  fileURL,
+  userId
+) {
   // return userRepository.findById(userId).then((user) =>
   db.collection("counter").findOne({ name: "postNumber" }, (err, data) => {
     const postNumber = data.postNumber
@@ -63,6 +71,7 @@ export async function createPost(title, desc, img_url, category, userId) {
       userId: userId,
       postNumber: postNumber,
       category: category,
+      fileURL: fileURL,
     }).save()
 
     db.collection("counter").updateOne(
@@ -105,9 +114,6 @@ export async function getByusername(username) {
 
 //------------------------------------- 좋아요 기능 ---------------------------------------//
 
-export async function postLike(id) {
-  return Post.findByIdAndUpdate(id, { $inc: { liked: 1 } })
-}
 
 export async function postView(postNumber) {
   return Post.findOneAndUpdate(

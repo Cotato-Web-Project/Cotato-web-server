@@ -8,8 +8,6 @@ import path from "path"
 
 //------------------------------------- middleware ---------------------------------------//
 
-const app = express()
-
 //------------------------------------- storage setting ---------------------------------------//
 const storage = multer.diskStorage({
   destination(req, file, cb) {
