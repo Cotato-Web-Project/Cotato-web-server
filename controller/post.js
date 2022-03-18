@@ -1,6 +1,7 @@
 //------------------------------------- import ---------------------------------------//
 
 import * as Posts from "../data/post.js"
+import { File } from "../data/file.js"
 import { upload } from "../database/storage.js"
 
 //------------------------------------- Post Controller ---------------------------------------//
@@ -36,25 +37,24 @@ export async function getPostbyNumber(req, res) {
 
 export async function createPost(req, res) {
   // await upload.array("image")
-  const { title, desc } = req.body
+  const { title, desc, attachment } = req.body
   const userId = req.userId
   const category = req.params.category
-  console.log(req.file)
-  // const attachment = await Files.createNewInstance(req.file)
-  // req.body.attachment = attachment
+  const file = await File.findOne({ serverFileName: attachment })
 
-  const img_url = []
-  req.body.image
-    ? req.files.image.forEach((e) => {
-        img_url.push(`http://localhost:3000/uploads/${e.filename}`)
-      })
-    : undefined
+  // const file_url = []
+  // ? req.files.image.forEach((e) => {
+  //     img_url.push(`http://localhost:3000/uploads/${e.filename}`)
+  //   })
+  // : undefined
+  const file_url = `http://localhost:8080/public/uploads/${file.serverFileName}`
+  console.log(file_url)
 
   const data = await Posts.createPost(
     title,
     desc,
-    img_url,
-    // attachment,
+    file_url,
+    attachment,
     category,
     userId
   ) //img_url,

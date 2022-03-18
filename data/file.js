@@ -8,7 +8,7 @@ const fileSchema = new mongoose.Schema({
   isDeleted: { type: Boolean, default: false },
 })
 
-const File = mongoose.model("File", fileSchema)
+export const File = mongoose.model("File", fileSchema)
 
 export async function createNewInstance(file, post) {
   return await File.create({

@@ -18,7 +18,7 @@ router.get("/:category/:postNumber", postController.getPostbyNumber)
 router.post(
   "/:category/createPost",
   isAuth,
-  upload.single("attachment"),
+  // upload.single("attachment"),
   postController.createPost
 )
 router.get("/:category/search", postController.searchInCategory)

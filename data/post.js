@@ -14,7 +14,8 @@ const postSchema = new mongoose.Schema(
     date: { type: Date, default: Date.now() },
     img: Array,
     // file: Array,
-    file: mongoose.Schema.Types.ObjectId,
+    file_url: String,
+    attachment: String,
     liked: { type: Number, default: 0 },
     views: { type: Number, default: 0 },
     userId: {
@@ -56,8 +57,8 @@ export async function getByPostnumber(postNumber) {
 export async function createPost(
   title,
   desc,
-  img_url,
-  // attachment,
+  file_url,
+  attachment,
   category,
   userId
 ) {
@@ -67,8 +68,8 @@ export async function createPost(
     new Post({
       title: title,
       desc: desc,
-      img: img_url,
-      // attachment: attachment,
+      file_url: file_url,
+      attachment: attachment,
       userId: userId,
       postNumber: postNumber,
       category: category,
