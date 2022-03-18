@@ -37,10 +37,13 @@ export async function getPostbyNumber(req, res) {
 
 export async function createPost(req, res) {
   await upload.array("image")
+
   const { title, desc, fileURL } = req.body
+
   const userId = req.userId
   const category = req.params.category
   const img_url = []
+
   req.body.image
     ? req.files.image.forEach((e) => {
         img_url.push(`http://localhost:3000/uploads/${e.filename}`)
