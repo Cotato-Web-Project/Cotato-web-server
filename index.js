@@ -78,6 +78,11 @@ app.post(
   }
 )
 
+app.get("/public/uploads/:filename", (req, res) => {
+  const filename = req.params.filename
+  res.download("./public/uploads/" + filename)
+})
+
 connectDB()
   .then(() => {
     app.listen(config.port.port, () => {
