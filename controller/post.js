@@ -1,6 +1,7 @@
 //------------------------------------- import ---------------------------------------//
 
 import * as Posts from "../data/post.js"
+import { File } from "../data/file.js"
 import { upload } from "../database/storage.js"
 import * as Like from "../data/like.js"
 
@@ -36,23 +37,28 @@ export async function getPostbyNumber(req, res) {
 //------------------------------------- 게시글 작성(수정필요) ---------------------------------//
 
 export async function createPost(req, res) {
-  await upload.array("image")
-  const { title, desc, fileURL } = req.body
+  // await upload.array("image")
+  const { title, desc, attachment } = req.body
   const userId = req.userId
   const category = req.params.category
-  const img_url = []
-  req.body.image
-    ? req.files.image.forEach((e) => {
-        img_url.push(`http://localhost:3000/uploads/${e.filename}`)
-      })
-    : undefined
+  const file = await File.findOne({ serverFileName: attachment })
+
+  // const file_url = []
+  // ? req.files.image.forEach((e) => {
+  //     img_url.push(`http://localhost:3000/uploads/${e.filename}`)
+  //   })
+  // : undefined
+  const file_url = `http://localhost:8080/public/uploads/${file.serverFileName}`
+  console.log(file_url)
 
   const data = await Posts.createPost(
     title,
     desc,
-    img_url,
+
+    file_url,
+    attachment,
     category,
-    fileURL,
+
     userId
   ) //img_url,
 

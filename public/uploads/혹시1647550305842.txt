@@ -1,0 +1,26 @@
+//댓글 등록 API(createcomment)
+app.post("/:id/createComment", (req, res) => {
+  const post = res.locals.post
+
+  req.body.post = post._id
+
+  comments.create(req.body, (err, comment) => {
+    if (err) {
+      return console.error(err)
+    }
+    return res.redirect("/:id/" + post._id)
+  })
+})
+
+//댓글 보여주기 (getAllcomment)
+Promise.all([
+  posts.findOne({ id: parseInt(req.params.id) }),
+  comments.find({ post: parseInt(req.params.id) }.sort("createdAt")),
+])
+  .then(([post, comment]) => {
+    return res.json({ post, comment }) //render
+  })
+  .catch((err) => {
+    console.log("err : ", err)
+    return res.json(err)
+  })
