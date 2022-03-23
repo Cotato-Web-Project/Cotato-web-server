@@ -12,6 +12,7 @@ import mypageRouter from "./router/mypage.js"
 import cors from "cors"
 import multer from "multer"
 import path from "path"
+import * as Files from "./data/file.js"
 
 //---------------------------- middleware --------------------------------//
 const __dirname = path.resolve()
@@ -19,7 +20,7 @@ const app = express()
 
 app.use(cors())
 app.use(express.json())
-app.use(express.urlencoded())
+app.use(express.urlencoded({ extended: true }))
 
 app.use(express.static(path.join(__dirname + "/public")))
 app.use(helmet())
@@ -61,17 +62,21 @@ app.post("/cotato/img", upload.single("img"), (req, res) => {
   res.json({ url: IMG_URL })
 })
 
-app.post("/cotato/files", upload.array("upload_file"), (req, res) => {
-  // 해당 라우터가 정상적으로 작동하면 public/uploads에 이미지가 업로드된다.
-  // 업로드된 이미지의 URL 경로를 프론트엔드로 반환한다.
-  const file_URL = []
-  console.log(req.files)
-  // req.body.files.forEach((e) => {
-  //   const result = e.slice(12)
-  //   file_URL.push(`http://localhost:8080/public/uploads/${result}`)
-  // })
-  res.json(file_URL)
-})
+app.post(
+  "/cotato/attachment",
+  upload.single("attachment"),
+  async (req, res) => {
+    // 해당 라우터가 정상적으로 작동하면 public/uploads에 파일 업로드
+    const data = req.file
+    console.log("전달받은 파일", data)
+    console.log("저장된 파일의 이름", data.filename)
+
+    Files.createNewInstance(data) // 파일 객체 생성
+
+    res.json({ attachmentName: data.filename, originalname: data.originalname })
+    // 프론트로 저장된 파일 이름, 원래 파일 이름 보내줌
+  }
+)
 
 connectDB()
   .then(() => {

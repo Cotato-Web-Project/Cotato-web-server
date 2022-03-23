@@ -14,6 +14,8 @@ const postSchema = new mongoose.Schema(
     date: { type: Date, default: Date.now() },
     img: Array,
     // file: Array,
+    file_url: String,
+    attachment: String,
     liked: { type: Number, default: 0 },
     views: { type: Number, default: 0 },
     userId: {
@@ -56,9 +58,11 @@ export async function getByPostnumber(postNumber) {
 export async function createPost(
   title,
   desc,
-  img_url,
+
+  file_url,
+  attachment,
   category,
-  fileURL,
+
   userId
 ) {
   // return userRepository.findById(userId).then((user) =>
@@ -67,7 +71,8 @@ export async function createPost(
     new Post({
       title: title,
       desc: desc,
-      img: img_url,
+      file_url: file_url,
+      attachment: attachment,
       userId: userId,
       postNumber: postNumber,
       category: category,
@@ -113,7 +118,6 @@ export async function getByusername(username) {
 }
 
 //------------------------------------- 좋아요 기능 ---------------------------------------//
-
 
 export async function postView(postNumber) {
   return Post.findOneAndUpdate(
