@@ -23,9 +23,9 @@ router.post(
 )
 router.get("/:category/search", postController.searchInCategory)
 router.delete("/deletePost/:id", isAuth, postController.deletePost)
-router.delete("/unLike", isAuth, postController.unLike)
+router.post("/unLike", postController.unLike)
 router.put("/updatePost/:id", isAuth, postController.updatePost)
-router.post("/upLike", isAuth, postController.upLike)
+router.post("/upLike", postController.upLike)
 router.get("/:category/:postNumber/nextPost", postController.nextPost)
 router.get("/:category/:postNumber/prevPost", postController.prevPost)
 

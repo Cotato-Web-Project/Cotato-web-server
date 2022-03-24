@@ -222,7 +222,7 @@ export async function upLike(req, res) {
 
   const already =
     (await Like.getLike(info)) == 0 ? undefined : await Like.getLike(info)
-  console.log(already)
+  console.log("already: ", already)
   if (already != undefined) {
     res.json("이미 좋아요를 누른 게시물입니다!")
   } else {
