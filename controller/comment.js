@@ -84,11 +84,3 @@ export async function getByusername(req, res) {
   const recentPost = await Comment.getByusername(username)
   res.json(recentPost)
 }
-
-//------------------------------------- 댓글 좋아요 기능 ---------------------------------------//
-
-export async function commentLike(req, res) {
-  const id = req.params.id
-  const comment = await Comment.commentLike(id)
-  res.status(200).json({ liked: comment.liked + 1 })
-}

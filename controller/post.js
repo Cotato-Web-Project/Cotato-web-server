@@ -2,8 +2,8 @@
 
 import * as Posts from "../data/post.js"
 import { File } from "../data/file.js"
-import { upload } from "../database/storage.js"
 import * as Like from "../data/like.js"
+import * as Users from "../data/user.js"
 
 //------------------------------------- Post Controller ---------------------------------------//
 
@@ -37,30 +37,30 @@ export async function getPostbyNumber(req, res) {
 //------------------------------------- 게시글 작성(수정필요) ---------------------------------//
 
 export async function createPost(req, res) {
-  // await upload.array("image")
   const { title, desc, attachment } = req.body
   const userId = req.userId
+  const user = await Users.findById(userId)
+  const username = user.username
   const category = req.params.category
-  const file = await File.findOne({ serverFileName: attachment })
+  const filearray = []
 
-  // const file_url = []
-  // ? req.files.image.forEach((e) => {
-  //     img_url.push(`http://localhost:3000/uploads/${e.filename}`)
-  //   })
-  // : undefined
-  const file_url = `http://localhost:8080/public/uploads/${file.serverFileName}`
-  console.log(file_url)
+  for (var i = 0; i < attachment.length; i++) {
+    const file = await File.findOne({ serverFileName: attachment[i] })
+    console.log("서버파일이름 ", file.serverFileName)
+    filearray.push(
+      `http://localhost:8080/public/uploads/${file.serverFileName}`
+    )
+  }
 
   const data = await Posts.createPost(
     title,
     desc,
-
-    file_url,
+    filearray,
     attachment,
     category,
-
-    userId
-  ) //img_url,
+    userId,
+    username
+  )
 
   res.status(201).json(data)
 }
@@ -68,23 +68,30 @@ export async function createPost(req, res) {
 //------------------------------------- 게시글 수정(수정필요) ---------------------------------------//
 
 export async function updatePost(req, res) {
-  await upload.single({ name: "image" })
   const postNumber = req.params.postNumber
 
-  const { title, desc } = req.body
-  const img_url = []
-  req.body.image
-    ? req.file.image.forEach((e) => {
-        img_url.push(`http://localhost:8080/uploads/${e.filename}`)
-      })
-    : undefined
+  const { title, desc, attachment } = req.body
+  const filearray = []
+  for (var i = 0; i < attachment.length; i++) {
+    const file = await File.findOne({ serverFileName: attachment[i] })
+    console.log("서버파일이름 ", file.serverFileName)
+    filearray.push(
+      `http://localhost:8080/public/uploads/${file.serverFileName}`
+    )
+  }
 
   const post = await Posts.getByPostnumber(postNumber)
   if (post.userId !== req.userId) {
     return res.sendStatus(403)
   }
 
-  const data = await Posts.updatePost(postNumber, title, desc, img_url)
+  const data = await Posts.updatePost(
+    postNumber,
+    title,
+    desc,
+    attachment,
+    filearray
+  )
 
   res.status(200).json(data)
 }
@@ -163,26 +170,13 @@ export async function getCategory(req, res) {
   res.status(200).json(data)
 }
 
-export async function img(req, res) {
-  await upload.single("image")
-  const result = req.file
-  console.log(result)
-  // console.log("전달받은 파일", req.img)
-  // console.log("전달", req.file)
-  // console.log("으악", req.body)
-
-  // console.log("저장된 파일의 이름", req.file.filename)
-  // const IMG_URL = `http://localhost:8080/uploads/${req.img.filename}`
-  // console.log(IMG_URL)
-  // res.json({ url: IMG_URL })
-}
-
 export async function nextPost(req, res) {
   const postNumber = parseInt(req.params.postNumber)
   const category = req.params.category
   const nextdata = await Posts.nextPost(postNumber, category)
   nextdata ? res.json(nextdata) : {}
 }
+
 export async function prevPost(req, res) {
   const postNumber = parseInt(req.params.postNumber)
   const category = req.params.category
@@ -200,7 +194,7 @@ export async function getLike(req, res) {
   } else {
     info = { commentId: req.body.commentId }
   }
-  console.log(info)
+
   await Like.getLike(info)
     .then((result) => {
       res.status(200).json({ success: true, result })
@@ -223,6 +217,7 @@ export async function upLike(req, res) {
   const already =
     (await Like.getLike(info)) == 0 ? undefined : await Like.getLike(info)
   console.log(already)
+
   if (already != undefined) {
     res.json("이미 좋아요를 누른 게시물입니다!")
   } else {

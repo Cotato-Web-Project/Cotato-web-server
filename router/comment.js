@@ -1,10 +1,10 @@
-//------------------------------------- import ---------------------------------------//
+//--------------------------------- import -----------------------------------//
 
 import express from "express"
 import * as commentController from "../controller/comment.js"
 import { isAuth } from "../middleware/auth.js"
 
-//------------------------------------- router ---------------------------------------//
+//---------------------------------- router ------------------------------------//
 
 const router = express.Router()
 
@@ -14,6 +14,5 @@ router.get("/:id/getComments", commentController.getComments)
 router.get("/:id/getComment", commentController.getComment)
 router.put("/:id/updateComment", isAuth, commentController.updateComment)
 router.put("/:id/deleteComment", isAuth, commentController.deleteComment)
-router.put("/:id/commentLike", isAuth, commentController.commentLike)
 
 export default router

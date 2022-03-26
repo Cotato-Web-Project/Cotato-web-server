@@ -132,9 +132,3 @@ export async function createReplyComment(
 export async function getByusername(username) {
   return Comment.find({ username: username }).sort({ createdAt: -1 })
 }
-
-//------------------------------------- 좋아요 기능 ---------------------------------------//
-
-export async function commentLike(id) {
-  return Comment.findByIdAndUpdate(id, { $inc: { liked: 1 } })
-}
