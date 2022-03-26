@@ -19,7 +19,7 @@ router.delete("/deletePost/:id", isAuth, postController.deletePost)
 router.delete("/unLike", isAuth, postController.unLike)
 router.put("/updatePost/:id", isAuth, postController.updatePost)
 router.post("/upLike", isAuth, postController.upLike)
-router.get("/:category/:postNumber/nextPost", postControsller.nextPost)
+router.get("/:category/:postNumber/nextPost", postController.nextPost)
 router.get("/:category/:postNumber/prevPost", postController.prevPost)
 
 export default router

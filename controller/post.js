@@ -188,16 +188,15 @@ export async function prevPost(req, res) {
 
 export async function getLike(req, res) {
   let info = {}
-
   if (req.body.postId) {
     info = { postId: req.body.postId }
   } else {
     info = { commentId: req.body.commentId }
   }
-
   await Like.getLike(info)
     .then((result) => {
-      res.status(200).json({ success: true, result })
+      console.log(result.length)
+      res.status(200).json({ success: true, result: result.length })
     })
     .catch((err) => {
       console.log(err)
@@ -207,17 +206,14 @@ export async function getLike(req, res) {
 
 export async function upLike(req, res) {
   let info = {}
-
   if (req.body.postId) {
     info = { postId: req.body.postId, userId: req.body.userId }
   } else {
     info = { commentId: req.body.commentId, userId: req.body.userId }
   }
-
   const already =
     (await Like.getLike(info)) == 0 ? undefined : await Like.getLike(info)
   console.log(already)
-
   if (already != undefined) {
     res.json("이미 좋아요를 누른 게시물입니다!")
   } else {
@@ -229,13 +225,11 @@ export async function upLike(req, res) {
 
 export async function unLike(req, res) {
   let info = {}
-
   if (req.body.postId) {
     info = { postId: req.body.postId, userId: req.body.userId }
   } else {
     info = { commentId: req.body.commentId, userId: req.body.userId }
   }
-
   await Like.unLike(info).then((result) => {
     if (result == null) {
       res.status(400).json("아직 좋아요를 누르지 않은 게시물입니다.")
